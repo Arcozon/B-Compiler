@@ -1,12 +1,5 @@
-NAME = B
-
-SRC = B.l
-
-RM = rm -rf
-
-all: $(NAME)
-
+build:
+	docker compose up --build && mv src/B .
+ 
 clean:
-
-fclean:
-	$(RM) $(NAME)
+	docker compose down
