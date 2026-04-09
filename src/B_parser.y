@@ -16,6 +16,9 @@
 %token <fval> FLOAT
 %token <sval> NAME
 
+%token AUTO
+
+%type <sval> string
 %%
 
 program:
@@ -23,8 +26,35 @@ program:
 	;
 
 statement:
-	|	NAME	{printf("Found Name [%s]\n", $1);}
+		declaration
+	|	assignation
+	;
+
+declaration:
+	AUTO NAME	{
+		//Add Name to tree
+		printf("auto %s\n", $2);}
+	| declaration ',' NAME {
+		//Add Name to tree
+	}
+	;
+
+assignation:
+		NAME '=' value  ';'	{
+			// printf("%s = %d", $1, $3);
+		}
+	;
+
+value:
+		NAME
 	|	number
+	|	string
+	;
+
+string:
+		'"' NAME '"' {
+			$$ = $2;
+			}
 	;
 
 number:

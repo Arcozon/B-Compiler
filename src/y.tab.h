@@ -56,7 +56,8 @@ extern int yydebug;
     YYUNDEF = 257,                 /* "invalid token"  */
     INTEGER = 258,                 /* INTEGER  */
     FLOAT = 259,                   /* FLOAT  */
-    NAME = 260                     /* NAME  */
+    NAME = 260,                    /* NAME  */
+    AUTO = 261                     /* AUTO  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
@@ -68,6 +69,7 @@ extern int yydebug;
 #define INTEGER 258
 #define FLOAT 259
 #define NAME 260
+#define AUTO 261
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
@@ -79,7 +81,7 @@ union YYSTYPE
 	float	fval;
 	char	*sval;
 
-#line 83 "y.tab.h"
+#line 85 "y.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;

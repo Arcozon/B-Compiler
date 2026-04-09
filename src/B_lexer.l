@@ -4,7 +4,7 @@
 
 %%
 
-"auto"		{}
+"auto"		{return AUTO;}
 "extern"		{}
 
 "++"		{}
@@ -38,6 +38,8 @@
 
 [A-Za-z_][A-Za-z0-9_]*		{ yylval.sval = strdup(yytext);		return NAME;}
 
+
+[ \n\t]	{}
 .				{}
 
 

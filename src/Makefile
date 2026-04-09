@@ -7,13 +7,13 @@ C_SRC = y.tab.c  lex.yy.c
 
 RM = rm -rf
 
-all: $(NAME)
+all: clean $(NAME)
 
 $(NAME): $(C_SRC) 
 	cc $^ -o $@
 
 y.tab.c: $(Y_SRC)
-	yacc -d $^
+	yacc -d $^ -Wcounterexamples
 
 lex.yy.c: $(L_SRC)
 	lex $^
