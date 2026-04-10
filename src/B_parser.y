@@ -18,7 +18,7 @@
 
 %token AUTO
 
-%type <sval> string
+/* %type <sval> string */
 %%
 
 program:
@@ -35,35 +35,18 @@ declaration:
 		//Add Name to tree
 		printf("auto %s\n", $2);}
 	| declaration ',' NAME {
-		//Add Name to tree
-	}
+		printf(", %s\n", $3);}
 	;
 
 assignation:
-		NAME '=' value  ';'	{
+		NAME '=' value	{
 			// printf("%s = %d", $1, $3);
 		}
 	;
-
 value:
-		NAME
-	|	number
-	|	string
-	;
-
-string:
-		'"' NAME '"' {
-			$$ = $2;
-			}
-	;
-
-number:
-		INTEGER	{
-			printf("Found Number [%d]\n", $1);
-		}
-	|	FLOAT {
-			printf("Found Float [%f]\n", $1);
-		}
+		NAME 
+	|	INTEGER
+	|	FLOAT
 	;
 
 %%
