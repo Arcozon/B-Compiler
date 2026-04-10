@@ -20,20 +20,19 @@
 %token NAME
 
 %token AUTO EXTERN
-%token IF ELSE ELIF
-%right IF
+%token IF ELSE
+%right IF ELSE
 %token WHILE
 %token SWITCH CASE
 %token GOTO
 %token RETURN
 
 %token INC DEC
-%right INC DEC
 %token EQUAL NOT_EQUAL INF_EQUAL SUP_EQUAL
 %token L_SHIFT R_SHIFT
 
+
 /* %type <sval> string */
-/* NAME '(' name_list_0_ ')' IF '(' rvalue ')' if_bloc . ELIF '(' rvalue ')' statement elif_bloc_0_ else_bloc_0_1 elif_bloc_0_ else_bloc_0_1 $end */
 %%
 
 program:
@@ -100,8 +99,8 @@ statement:
 	|	NAME ':' statement
 	|	CASE constant ':' statement
 	|	'{' statement_list_0_ '}'
-	/* |	if_elif_else_bloc */
-	|	if_bloc else_bloc_0_1
+	|	IF '(' rvalue ')' statement
+	|	IF '(' rvalue ')' statement ELSE statement
 	|	WHILE '(' rvalue ')' statement
 	|	SWITCH rvalue statement
 	|	GOTO rvalue ';'
@@ -114,27 +113,6 @@ statement_list_0_:
 	|	statement statement_list_0_
 	;
 
-if_bloc:
-		IF '(' rvalue ')' statement
-	;
-elif:
-		ELIF
-	|	ELSE IF
-	;
-elif_bloc:
-		elif '(' rvalue ')' statement
-	;
-elif_bloc_0_:
-		// Empty
-	|	elif_bloc elif_bloc_0_
-	;
-
-else_bloc_0_1:
-		// Empty
-	|	ELSE statement
-	;
-if_elif_else_bloc:
-		if_bloc elif_bloc_0_ else_bloc_0_1
 	;
 
 rvalue:
