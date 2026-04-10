@@ -139,10 +139,12 @@ lvalue:
 rvalue:
 		rvalue_1
 	;
+rvalue_list_0_:
+	;	// NEED
 rvalue_1:
 		lvalue INC
 	|	lvalue DEC
-	|	lvalue DEC
+	|	lvalue '(' ')'
 	;
 rvalue_2:
 		INC lvalue
