@@ -131,44 +131,29 @@ statement_list_0_:
 	;
 
 	;
-
-rvalue:
-		'(' rvalue ')'
-	|	lvalue				%prec DEREF
-	|	constant
-	|	lvalue assign rvalue	%prec ASSIGN
-	|	INC lvalue			%prec PRE_INC_DEC	{printf("++a\n");}
-	|	DEC lvalue			%prec PRE_INC_DEC	{printf("--a\n");}
-	|	lvalue INC			%prec POST_INC_DEC	{printf("a++\n");}
-	|	lvalue DEC			%prec POST_INC_DEC	{printf("a--\n");}
-	|	AND lvalue			%prec DEREF
-	|	SUB rvalue			%prec DEREF
-	|	TILDE rvalue			%prec DEREF
-	|	rvalue binary rvalue
-	|	rvalue MULT rvalue
-	|	rvalue '?' rvalue ':' rvalue
-	|	rvalue '(' rvalue_0_ ')'
-	;
-rvalue_0_1:
-		// Empty
-	|	rvalue
-	;
-rvalue_0_:
-		// Empty
-	|	rvalue_1_
-	;
-rvalue_1_:
-		rvalue
-	|	rvalue ',' rvalue_1_
-	;
-
-
 lvalue:
 		NAME
-	|	'*' rvalue				%prec DEREF
-	|	rvalue '[' rvalue ']'	%prec DEREF
+	|	lvalue '[' rvalue ']';
+	|	MULT rvalue
 	;
-
+rvalue:
+		rvalue_1
+	;
+rvalue_1:
+		lvalue INC
+	|	lvalue DEC
+	|	lvalue DEC
+	;
+rvalue_2:
+		INC lvalue
+	|	DEC lvalue
+	|	ADD lvalue
+	|	SUB lvalue
+	|	NOT lvalue
+	|	TILDE lvalue
+	|	MULT lvalue
+	|	AND lvalue
+	;
 assign:
 		ASSIGN
 	|	ASSIGN_L_SHIFT
