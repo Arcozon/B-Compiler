@@ -28,8 +28,12 @@
 %token RETURN
 
 %token INC DEC
-%token EQUAL NOT_EQUAL INF_EQUAL SUP_EQUAL
-%token L_SHIFT R_SHIFT
+
+/* %token L_SHIFT R_SHIFT MULT DIV MODULO ADD SUB OR AND EQUAL XOR NOT_EQUAL INF INF_EQUAL SUP SUP_EQUAL */
+%left L_SHIFT R_SHIFT MULT DIV MODULO ADD SUB OR AND XOR EQUAL NOT_EQUAL INF INF_EQUAL SUP SUP_EQUAL
+/* %token ASSIGN ASSIGN_L_SHIFT ASSIGN_R_SHIFT ASSIGN_MULT ASSIGN_DIV ASSIGN_MODULO ASSIGN_ADD ASSIGN_SUB ASSIGN_OR ASSIGN_AND ASSIGN_XOR ASSIGN_EQUAL ASSIGN_NOT_EQUAL ASSIGN_INF ASSIGN_INF_EQUAL ASSIGN_SUP ASSIGN_SUP_EQUAL */
+%left ASSIGN ASSIGN_L_SHIFT ASSIGN_R_SHIFT ASSIGN_MULT ASSIGN_DIV ASSIGN_MODULO ASSIGN_ADD ASSIGN_SUB ASSIGN_OR ASSIGN_AND ASSIGN_XOR ASSIGN_EQUAL ASSIGN_NOT_EQUAL ASSIGN_INF ASSIGN_INF_EQUAL ASSIGN_SUP ASSIGN_SUP_EQUAL
+
 
 
 /* %type <sval> string */
@@ -46,7 +50,7 @@ definition:
 
 global_definition:
 		NAME
-	|	NAME '[' constant_list_0_1 ']' constant_list_0_
+	|	NAME '[' constant_list_0_1 ']' ival_list_0_
 	;
 
 constant:
@@ -57,14 +61,6 @@ constant:
 constant_list_0_1:
 		// Empty
 	|	constant
-	;
-constant_list_0_:
-		// Empty
-	|	constant_list_1_
-	;
-constant_list_1_:
-		constant
-	|	constant ',' constant_list_1_
 	;
 
 name_list_0_:
@@ -87,6 +83,14 @@ name_constant_0_1_list_1_:
 ival:
 		NAME
 	|	constant
+	;
+ival_list_0_:
+		// Empty
+	|	ival_list_1_
+	;
+ival_list_1_:
+		ival
+	|	ival ',' ival_list_1_ 
 	;
 
 function_definition:
@@ -122,8 +126,9 @@ rvalue:
 	|	lvalue assign rvalue
 	|	inc_dec lvalue
 	|	lvalue inc_dec
-	|	unary rvalue
 	|	'&' lvalue
+	|	'-' rvalue
+	|	'~' rvalue
 	|	rvalue binary rvalue
 	|	rvalue '?' rvalue ':' rvalue
 	;
@@ -134,39 +139,49 @@ rvalue_0_1:
 
 lvalue:
 		NAME
-	|	'*' rvalue
+	|	'*' rvalue			%prec '*'
 	|	rvalue '[' rvalue ']'
 	;
 
 assign:
-		'='
-	|	'=' binary
+		ASSIGN
+	|	ASSIGN_L_SHIFT
+	|	ASSIGN_R_SHIFT
+	|	ASSIGN_MULT
+	|	ASSIGN_DIV
+	|	ASSIGN_MODULO
+	|	ASSIGN_ADD
+	|	ASSIGN_SUB
+	|	ASSIGN_OR
+	|	ASSIGN_AND
+	|	ASSIGN_EQUAL
+	|	ASSIGN_NOT_EQUAL
+	|	ASSIGN_INF
+	|	ASSIGN_INF_EQUAL
+	|	ASSIGN_SUP
+	|	ASSIGN_SUP_EQUAL
 	;
+
 inc_dec:
 		INC
 	|	DEC
 	;
 binary:
-		'|'
-	|	'&'
+		L_SHIFT
+	|	R_SHIFT
+	|	MULT
+	|	DIV
+	|	MODULO
+	|	ADD
+	|	SUB
+	|	OR
+	|	AND
 	|	EQUAL
 	|	NOT_EQUAL
-	|	'<'
+	|	INF
 	|	INF_EQUAL
-	|	'>'
+	|	SUP
 	|	SUP_EQUAL
-	|	L_SHIFT
-	|	R_SHIFT
-	|	'+'
-	|	'-'
-	|	'*'
-	|	'/'
-	|	'%'
-	;
-unary:
-		'-'
-	|	'!'
-	|	'~'
 	;
 
 %%
