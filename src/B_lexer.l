@@ -1,6 +1,7 @@
 %{
 	#include "y.tab.h"
 	#include "var_type.h"
+	int	unescape_asterix(char c);
 %}
 
 %%
@@ -17,7 +18,6 @@
 
 "if"		{return IF;}
 "else"		{return ELSE;}
-"elif"		{return ELIF;}
 
 "return"	{return RETURN;}
 
@@ -48,7 +48,7 @@
 "=<<"		{return ASSIGN_L_SHIFT;}
 "=>>"		{return ASSIGN_R_SHIFT;}
 "=*"		{return ASSIGN_MULT;}
-"=/"		{return ASSIGN_DIVI;}
+"=/"		{return ASSIGN_DIV;}
 "=%"		{return ASSIGN_MODULO;}
 "=+"		{return ASSIGN_ADD;}
 "=-"		{return ASSIGN_SUB;}
@@ -71,15 +71,25 @@
 [A-Za-z][A-Za-z0-9]*		{ yylval.sval = strdup(yytext);		return NAME;}
 
 '[^*]'			{	yylval.ival = yytext[2]; return INTEGER;}
-'*[0e()t'"n]'	{	yylval.ival = unescape_asterix(yytext[2]); return integer}
+'*[0e()t'"n]'	{	yylval.ival = unescape_asterix(yytext[2]); return INTEGER;}
 
 [ \n\t]	{}
 
+";" 	{return ';';}
+"," 	{return ',';}
+"?" 	{return '?';}
+":" 	{return ':';}
+"{" 	{return '{';}
+"}" 	{return '}';}
+"[" 	{return '[';}
+"]" 	{return ']';}
+"(" 	{return '(';}
+")" 	{return ')';}
 %%
 int	unescape_asterix(char c) {
 	switch (c) {
 		case '0':	return ('\0');
-		case 'e':	return (EOT);
+		case 'e':	return ('\0');
 		case '(':	return ('{');
 		case ')':	return ('}');
 		case 't':	return ('\t');
@@ -87,8 +97,8 @@ int	unescape_asterix(char c) {
 		case '"':	return ('"');
 		case 'n':	return ('\n');
 		default:	{
-			fprintf("Error escape *: '%c'(%d) Unkown escape", c, (int)c);
-			return ('');
+			fprintf(stderr, "Error escape *: '%c'(%d) Unkown escape\n", c, (int)c);
+			return ('\0');
 		}
 	}
 }

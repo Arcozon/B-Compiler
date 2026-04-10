@@ -13,7 +13,7 @@ $(NAME): $(C_SRC)
 	cc $^ -o $@
 
 y.tab.c: $(Y_SRC)
-	yacc -d $^ -Wcounterexamples
+	yacc -d $^ 
 
 lex.yy.c: $(L_SRC)
 	lex $^

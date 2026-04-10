@@ -2,8 +2,6 @@
 	#include <stdio.h>
 	#include <stdlib.h>
 
-	# define EOT '\0x04'
-
 	void yyerror(const char *s) { fprintf(stderr, "Error: %s\n", s); }
 	int yylex(void);
 %}
@@ -16,7 +14,7 @@
 
 %start program
 
-%token INTEGER STRING CHAR
+%token INTEGER STRING CHAR FLOAT
 %token NAME
 
 %token AUTO EXTERN
@@ -30,21 +28,35 @@
 %token INC DEC
 
 /* %token L_SHIFT R_SHIFT MULT DIV MODULO ADD SUB OR AND EQUAL XOR NOT_EQUAL INF INF_EQUAL SUP SUP_EQUAL */
-%left L_SHIFT R_SHIFT MULT DIV MODULO ADD SUB OR AND XOR EQUAL NOT_EQUAL INF INF_EQUAL SUP SUP_EQUAL
+/* %right L_SHIFT R_SHIFT MULT DIV MODULO ADD SUB OR AND XOR EQUAL NOT_EQUAL INF INF_EQUAL SUP SUP_EQUAL */
 /* %token ASSIGN ASSIGN_L_SHIFT ASSIGN_R_SHIFT ASSIGN_MULT ASSIGN_DIV ASSIGN_MODULO ASSIGN_ADD ASSIGN_SUB ASSIGN_OR ASSIGN_AND ASSIGN_XOR ASSIGN_EQUAL ASSIGN_NOT_EQUAL ASSIGN_INF ASSIGN_INF_EQUAL ASSIGN_SUP ASSIGN_SUP_EQUAL */
-%left ASSIGN ASSIGN_L_SHIFT ASSIGN_R_SHIFT ASSIGN_MULT ASSIGN_DIV ASSIGN_MODULO ASSIGN_ADD ASSIGN_SUB ASSIGN_OR ASSIGN_AND ASSIGN_XOR ASSIGN_EQUAL ASSIGN_NOT_EQUAL ASSIGN_INF ASSIGN_INF_EQUAL ASSIGN_SUP ASSIGN_SUP_EQUAL
+%right ASSIGN ASSIGN_L_SHIFT ASSIGN_R_SHIFT ASSIGN_MULT ASSIGN_DIV ASSIGN_MODULO ASSIGN_ADD ASSIGN_SUB ASSIGN_OR ASSIGN_AND ASSIGN_XOR ASSIGN_EQUAL ASSIGN_NOT_EQUAL ASSIGN_INF ASSIGN_INF_EQUAL ASSIGN_SUP ASSIGN_SUP_EQUAL
+
+%left OR
+%left AND
+%left XOR
+%left EQUAL NOT_EQUAL
+%left INF INF_EQUAL SUP SUP_EQUAL
+%left L_SHIFT R_SHIFT
+%left ADD SUB
+%left MULT DIV MODULO
 
 
+%right POST_INC_DEC
+%right PRE_INC_DEC
+
+%token NOT TILDE
+%right DEREF
 
 /* %type <sval> string */
 %%
 
 program:
-		// Empty
+		{printf("Found empty prog");} // Empty
 	|	definition
 
 definition:
-		global_definition ';'
+		global_definition ';'	{printf("Found global def");}
 	|	function_definition
 	;
 
@@ -109,7 +121,8 @@ statement:
 	|	SWITCH rvalue statement
 	|	GOTO rvalue ';'
 	|	RETURN rvalue_0_1 ';'
-	|	rvalue_0_1 ';'
+	|	rvalue ';'
+	|	';'
 	;
 
 statement_list_0_:
@@ -121,26 +134,39 @@ statement_list_0_:
 
 rvalue:
 		'(' rvalue ')'
-	|	lvalue
+	|	lvalue				%prec DEREF
 	|	constant
-	|	lvalue assign rvalue
-	|	inc_dec lvalue
-	|	lvalue inc_dec
-	|	'&' lvalue
-	|	'-' rvalue
-	|	'~' rvalue
+	|	lvalue assign rvalue	%prec ASSIGN
+	|	INC lvalue			%prec PRE_INC_DEC	{printf("++a\n");}
+	|	DEC lvalue			%prec PRE_INC_DEC	{printf("--a\n");}
+	|	lvalue INC			%prec POST_INC_DEC	{printf("a++\n");}
+	|	lvalue DEC			%prec POST_INC_DEC	{printf("a--\n");}
+	|	AND lvalue			%prec DEREF
+	|	SUB rvalue			%prec DEREF
+	|	TILDE rvalue			%prec DEREF
 	|	rvalue binary rvalue
+	|	rvalue MULT rvalue
 	|	rvalue '?' rvalue ':' rvalue
+	|	rvalue '(' rvalue_0_ ')'
 	;
 rvalue_0_1:
 		// Empty
 	|	rvalue
 	;
+rvalue_0_:
+		// Empty
+	|	rvalue_1_
+	;
+rvalue_1_:
+		rvalue
+	|	rvalue ',' rvalue_1_
+	;
+
 
 lvalue:
 		NAME
-	|	'*' rvalue			%prec '*'
-	|	rvalue '[' rvalue ']'
+	|	'*' rvalue				%prec DEREF
+	|	rvalue '[' rvalue ']'	%prec DEREF
 	;
 
 assign:
@@ -154,6 +180,7 @@ assign:
 	|	ASSIGN_SUB
 	|	ASSIGN_OR
 	|	ASSIGN_AND
+	|	ASSIGN_XOR
 	|	ASSIGN_EQUAL
 	|	ASSIGN_NOT_EQUAL
 	|	ASSIGN_INF
@@ -162,20 +189,20 @@ assign:
 	|	ASSIGN_SUP_EQUAL
 	;
 
-inc_dec:
+/* inc_dec:
 		INC
 	|	DEC
-	;
+	; */
 binary:
 		L_SHIFT
 	|	R_SHIFT
-	|	MULT
 	|	DIV
 	|	MODULO
 	|	ADD
 	|	SUB
 	|	OR
 	|	AND
+	|	XOR
 	|	EQUAL
 	|	NOT_EQUAL
 	|	INF
