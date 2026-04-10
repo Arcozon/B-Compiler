@@ -14,17 +14,21 @@
 	char	*sval;
 }
 
+%start program
+
 %token INTEGER STRING CHAR
 %token NAME
 
 %token AUTO EXTERN
 %token IF ELSE ELIF
+%right IF
 %token WHILE
 %token SWITCH CASE
 %token GOTO
 %token RETURN
 
 %token INC DEC
+%right INC DEC
 %token EQUAL NOT_EQUAL INF_EQUAL SUP_EQUAL
 %token L_SHIFT R_SHIFT
 
@@ -96,7 +100,8 @@ statement:
 	|	NAME ':' statement
 	|	CASE constant ':' statement
 	|	'{' statement_list_0_ '}'
-	|	if_elif_else_bloc
+	/* |	if_elif_else_bloc */
+	|	if_bloc else_bloc_0_1
 	|	WHILE '(' rvalue ')' statement
 	|	SWITCH rvalue statement
 	|	GOTO rvalue ';'
