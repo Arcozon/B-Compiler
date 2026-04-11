@@ -133,7 +133,7 @@ statement_list_0_:
 
 lvalue:
 		NAME
-	|	rvalue '[' rvalue ']'
+	|	rvalue_12 '[' rvalue ']'
 	|	MULT rvalue
 	;
 rvalue_list_0_1:
@@ -161,74 +161,74 @@ rvalue_1:
 rvalue_2:
 		INC lvalue
 	|	DEC lvalue
-	|	ADD rvalue
-	|	SUB rvalue
-	|	NOT rvalue
+	|	ADD rvalue_2
+	|	SUB rvalue_2
+	|	NOT rvalue_2
 	|	TILDE lvalue
 	|	AND lvalue
 	|	rvalue_3
 	;
 rvalue_3:
-		rvalue MULT rvalue
-	|	rvalue DIV rvalue
-	|	rvalue MODULO rvalue
+		rvalue_3 MULT rvalue_4
+	|	rvalue_3 DIV rvalue_4
+	|	rvalue_3 MODULO rvalue_4
 	|	rvalue_4
 rvalue_4:
-		rvalue ADD rvalue
-	|	rvalue SUB rvalue
+		rvalue_4 ADD rvalue_5
+	|	rvalue_4 SUB rvalue_5
 	|	rvalue_5
 	;
 rvalue_5:
-		rvalue L_SHIFT rvalue
-	|	rvalue R_SHIFT rvalue
+		rvalue_5 L_SHIFT rvalue_6
+	|	rvalue_5 R_SHIFT rvalue_6
 	|	rvalue_6
 	;
 rvalue_6:
-		rvalue INF rvalue
-	|	rvalue INF_EQUAL rvalue
-	|	rvalue SUP rvalue
-	|	rvalue SUP_EQUAL rvalue
+		rvalue_6 INF rvalue_7
+	|	rvalue_6 INF_EQUAL rvalue_7
+	|	rvalue_6 SUP rvalue_7
+	|	rvalue_6 SUP_EQUAL rvalue_7
 	|	rvalue_7
 	;
 rvalue_7:
-		 EQUAL rvalue
-	|	rvalue NOT_EQUAL rvalue
+		EQUAL rvalue_7
+	|	rvalue_7 NOT_EQUAL rvalue_8
 	|	rvalue_8
 	;
 rvalue_8:
-		rvalue AND rvalue
+		rvalue_8 AND rvalue_9
 	|	rvalue_9
 	;
 rvalue_9:
-		rvalue XOR rvalue
+		rvalue_9 XOR rvalue
 	|	rvalue_10
 	;
 rvalue_10:
-		rvalue OR rvalue
+		rvalue_10 OR rvalue_11
 	|	rvalue_11
 	;
 rvalue_11:
 		rvalue_12	// LOGIC_AND && LOGIC_OR ||
 	;
 rvalue_12:
-		rvalue '?' rvalue ':' rvalue
-	|	lvalue ASSIGN rvalue
-	|	lvalue ASSIGN_ADD rvalue
-	|	lvalue ASSIGN_SUB rvalue
-	|	lvalue ASSIGN_MULT rvalue
-	|	lvalue ASSIGN_DIV rvalue
-	|	lvalue ASSIGN_MODULO rvalue
-	|	lvalue ASSIGN_L_SHIFT rvalue
-	|	lvalue ASSIGN_R_SHIFT rvalue
-	|	lvalue ASSIGN_INF rvalue
-	|	lvalue ASSIGN_INF_EQUAL rvalue
-	|	lvalue ASSIGN_SUP_EQUAL rvalue
-	|	lvalue ASSIGN_EQUAL rvalue
-	|	lvalue ASSIGN_NOT_EQUAL rvalue
-	|	lvalue ASSIGN_AND rvalue
-	|	lvalue ASSIGN_XOR rvalue
-	|	lvalue ASSIGN_OR rvalue
-	|	'(' rvalue ')'
+		rvalue_12 '?' rvalue_12 ':' rvalue_12
+	|	lvalue ASSIGN rvalue_12
+	|	lvalue ASSIGN_ADD rvalue_12
+	|	lvalue ASSIGN_SUB rvalue_12
+	|	lvalue ASSIGN_MULT rvalue_12
+	|	lvalue ASSIGN_DIV rvalue_12
+	|	lvalue ASSIGN_MODULO rvalue_12
+	|	lvalue ASSIGN_L_SHIFT rvalue_12
+	|	lvalue ASSIGN_R_SHIFT rvalue_12
+	|	lvalue ASSIGN_INF rvalue_12
+	|	lvalue ASSIGN_INF_EQUAL rvalue_12
+	|	lvalue ASSIGN_SUP_EQUAL rvalue_12
+	|	lvalue ASSIGN_EQUAL rvalue_12
+	|	lvalue ASSIGN_NOT_EQUAL rvalue_12
+	|	lvalue ASSIGN_AND rvalue_12
+	|	lvalue ASSIGN_XOR rvalue_12
+	|	lvalue ASSIGN_OR rvalue_12
+	|	'(' rvalue_12 ')'
 	|	lvalue
 	|	constant
 	;
