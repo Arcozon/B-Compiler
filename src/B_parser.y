@@ -42,8 +42,9 @@
 %left MULT DIV MODULO
 
 
-%right POST_INC_DEC
-%right PRE_INC_DEC
+/* %right INC DEC */
+%nonassoc INC DEC 
+/* %right PRE_INC_DEC */
 
 %token NOT TILDE
 %right DEREF
@@ -120,7 +121,7 @@ statement:
 	|	WHILE '(' rvalue ')' statement
 	|	SWITCH rvalue statement
 	|	GOTO rvalue ';'
-	|	RETURN rvalue_0_1 ';'
+	|	RETURN rvalue_list_0_1 ';'
 	|	rvalue ';'
 	|	';'
 	;
@@ -130,72 +131,106 @@ statement_list_0_:
 	|	statement statement_list_0_
 	;
 
-	;
 lvalue:
 		NAME
-	|	lvalue '[' rvalue ']';
+	|	rvalue '[' rvalue ']'
 	|	MULT rvalue
+	;
+rvalue_list_0_1:
+		// Empty
+	|	rvalue
+	;
+rvalue_list_1_:
+		rvalue
+	|	rvalue ',' rvalue_list_1_
+	;
+
+rvalue_list_0_:
+		// Empty
+	|	rvalue_list_1_
 	;
 rvalue:
 		rvalue_1
 	;
-rvalue_list_0_:
-	;	// NEED
 rvalue_1:
-		lvalue INC
-	|	lvalue DEC
-	|	lvalue '(' ')'
+		lvalue INC						%prec INC
+	|	lvalue DEC						%prec INC
+	|	rvalue '(' rvalue_list_0_')'
+	|	rvalue_2
 	;
 rvalue_2:
 		INC lvalue
 	|	DEC lvalue
-	|	ADD lvalue
-	|	SUB lvalue
-	|	NOT lvalue
+	|	ADD rvalue
+	|	SUB rvalue
+	|	NOT rvalue
 	|	TILDE lvalue
-	|	MULT lvalue
 	|	AND lvalue
+	|	rvalue_3
 	;
-assign:
-		ASSIGN
-	|	ASSIGN_L_SHIFT
-	|	ASSIGN_R_SHIFT
-	|	ASSIGN_MULT
-	|	ASSIGN_DIV
-	|	ASSIGN_MODULO
-	|	ASSIGN_ADD
-	|	ASSIGN_SUB
-	|	ASSIGN_OR
-	|	ASSIGN_AND
-	|	ASSIGN_XOR
-	|	ASSIGN_EQUAL
-	|	ASSIGN_NOT_EQUAL
-	|	ASSIGN_INF
-	|	ASSIGN_INF_EQUAL
-	|	ASSIGN_SUP
-	|	ASSIGN_SUP_EQUAL
+rvalue_3:
+		rvalue MULT rvalue
+	|	rvalue DIV rvalue
+	|	rvalue MODULO rvalue
+	|	rvalue_4
+rvalue_4:
+		rvalue ADD rvalue
+	|	rvalue SUB rvalue
+	|	rvalue_5
 	;
-
-/* inc_dec:
-		INC
-	|	DEC
-	; */
-binary:
-		L_SHIFT
-	|	R_SHIFT
-	|	DIV
-	|	MODULO
-	|	ADD
-	|	SUB
-	|	OR
-	|	AND
-	|	XOR
-	|	EQUAL
-	|	NOT_EQUAL
-	|	INF
-	|	INF_EQUAL
-	|	SUP
-	|	SUP_EQUAL
+rvalue_5:
+		rvalue L_SHIFT rvalue
+	|	rvalue R_SHIFT rvalue
+	|	rvalue_6
+	;
+rvalue_6:
+		rvalue INF rvalue
+	|	rvalue INF_EQUAL rvalue
+	|	rvalue SUP rvalue
+	|	rvalue SUP_EQUAL rvalue
+	|	rvalue_7
+	;
+rvalue_7:
+		 EQUAL rvalue
+	|	rvalue NOT_EQUAL rvalue
+	|	rvalue_8
+	;
+rvalue_8:
+		rvalue AND rvalue
+	|	rvalue_9
+	;
+rvalue_9:
+		rvalue XOR rvalue
+	|	rvalue_10
+	;
+rvalue_10:
+		rvalue OR rvalue
+	|	rvalue_11
+	;
+rvalue_11:
+		rvalue_12	// LOGIC_AND && LOGIC_OR ||
+	;
+rvalue_12:
+		rvalue '?' rvalue ':' rvalue
+	|	lvalue ASSIGN rvalue
+	|	lvalue ASSIGN_ADD rvalue
+	|	lvalue ASSIGN_SUB rvalue
+	|	lvalue ASSIGN_MULT rvalue
+	|	lvalue ASSIGN_DIV rvalue
+	|	lvalue ASSIGN_MODULO rvalue
+	|	lvalue ASSIGN_L_SHIFT rvalue
+	|	lvalue ASSIGN_R_SHIFT rvalue
+	|	lvalue ASSIGN_INF rvalue
+	|	lvalue ASSIGN_INF_EQUAL rvalue
+	|	lvalue ASSIGN_SUP_EQUAL rvalue
+	|	lvalue ASSIGN_EQUAL rvalue
+	|	lvalue ASSIGN_NOT_EQUAL rvalue
+	|	lvalue ASSIGN_AND rvalue
+	|	lvalue ASSIGN_XOR rvalue
+	|	lvalue ASSIGN_OR rvalue
+	|	'(' rvalue ')'
+	|	lvalue
+	|	constant
 	;
 
 %%
