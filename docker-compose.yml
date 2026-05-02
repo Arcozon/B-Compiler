@@ -1,7 +1,0 @@
-services:
-  compiler:
-    build:
-      context: ./src
-      dockerfile: Dockerfile
-    volumes:
-      - ./src:/project
