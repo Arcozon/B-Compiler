@@ -30,9 +30,9 @@ $(D_GEN):
 	mkdir -p $@
 
 clean:
-	$(RM) $(YACC_C_GEN) y.tab.h $(LEX_C_GEN)
+	$(RM) $(D_GEN)
 
-fclean:
+fclean:	clean
 	$(RM) $(NAME)
 
 re:	fclean
