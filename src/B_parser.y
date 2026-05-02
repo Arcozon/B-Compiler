@@ -70,6 +70,7 @@ constant:
 		INTEGER
 	|	STRING
 	|	CHAR
+	|	FLOAT
 	;
 constant_list_0_1:
 		// Empty

@@ -66,12 +66,13 @@
 0[0-7]+			{	yylval.ival = strtol(yytext + 1, NULL, 8);	return INTEGER;}
 0x[0-9a-fA-F]+	{	yylval.ival = strtol(yytext + 2, NULL, 16);	return INTEGER;}
 [0-9]+			{	yylval.ival = strtol(yytext, NULL, 10);		return INTEGER;}
-[0-9]+\.[0-9]+?	{	yylval.fval = strtod(yytext, NULL);			return FLOAT;}
+[0-9]+\.[0-9]+?	{	yylval.fval = strtod(yytext, NULL);			return FLOAT;} // 3.   1.e6   5.982e-4
 
 [A-Za-z][A-Za-z0-9]*		{ yylval.sval = strdup(yytext);		return NAME;}
 
-'[^*]'			{	yylval.ival = yytext[2]; return INTEGER;}
-'*[0e()t'"n]'	{	yylval.ival = unescape_asterix(yytext[2]); return INTEGER;}
+'(\\([abetnvfr\\'"?]{1}|[0-7]{1,3}|x[0-9a-fA-F]{1,2})|[^\\']){1,4}'		{	return INTEGER;} // Char
+
+"(\\([abetnvfr\\'\"?]{1}|[0-7]{1,3}|x[0-9a-fA-F]{1,2})|[^\\\"])*"		{	return STRING;} // Char
 
 [ \n\t]	{}
 
@@ -85,6 +86,7 @@
 "]" 	{return ']';}
 "(" 	{return '(';}
 ")" 	{return ')';}
+
 %%
 int	unescape_asterix(char c) {
 	switch (c) {

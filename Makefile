@@ -17,17 +17,17 @@ LEX	=  flex
 
 all: $(NAME)
 
-$(NAME):	$(YACC_C_GEN)	$(LEX_C_GEN)
+$(NAME):	$(LEX_C_GEN)	$(YACC_C_GEN)
 	cc $^ -o $@
 
 $(YACC_C_GEN): $(D_SRC)$(YACC_SRC)	| $(D_GEN)
 	 $(YACC) -o$@ -- $<
 
 $(LEX_C_GEN): $(D_SRC)$(LEX_SRC)	| $(D_GEN)
-	$(LEX) -o$@
+	$(LEX) -o$@ $<
 
 $(D_GEN):
-	mkdir -p $@
+	@mkdir -p $@
 
 clean:
 	$(RM) $(D_GEN)
@@ -36,6 +36,7 @@ fclean:	clean
 	$(RM) $(NAME)
 
 re:	fclean
-	$(MAKE) --no-print-directory all
+	@clear
+	@$(MAKE) --no-print-directory all
 
 .PHONY:	re fclean all clean
