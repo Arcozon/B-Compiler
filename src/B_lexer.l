@@ -1,7 +1,10 @@
 %{
-	#include "y.tab.h"
+	#include <ctype.h>
+	#include "B_parser.h"
 	#include "var_type.h"
-	int	unescape_asterix(char c);
+
+	uint32_t	ft_charToI32(const char *str);
+	#define DEBUG(str, ...)	{fprintf(stderr, str"\n", ##__VA_ARGS__);}
 %}
 
 %%
@@ -70,7 +73,7 @@
 
 [A-Za-z][A-Za-z0-9]*		{ yylval.sval = strdup(yytext);		return NAME;}
 
-'(\\([abetnvfr\\'"?]{1}|[0-7]{1,3}|x[0-9a-fA-F]{1,2})|[^\\']){1,4}'		{	return INTEGER;} // Char
+'(\\([abetnvfr\\'"?]{1}|[0-7]{1,3}|x[0-9a-fA-F]{1,2})|[^\\']){1,4}'		{	yylval.ival = ft_charToI32(yytext); return INTEGER;} // Char
 
 "(\\([abetnvfr\\'\"?]{1}|[0-7]{1,3}|x[0-9a-fA-F]{1,2})|[^\\\"])*"		{	return STRING;} // Char
 
@@ -88,21 +91,84 @@
 ")" 	{return ')';}
 
 %%
-int	unescape_asterix(char c) {
-	switch (c) {
-		case '0':	return ('\0');
-		case 'e':	return ('\0');
-		case '(':	return ('{');
-		case ')':	return ('}');
-		case 't':	return ('\t');
-		case '\'':	return ('\'');
-		case '"':	return ('"');
-		case 'n':	return ('\n');
-		default:	{
-			fprintf(stderr, "Error escape *: '%c'(%d) Unkown escape\n", c, (int)c);
-			return ('\0');
+
+uint32_t	ft_charToI32(const char *_strQuote) {
+	static const char	_baseOct[] = "01234567"; 
+	static const char	_baseHex[] = "0123456789abcdef";
+
+	const char	*strEnd = &_strQuote[strlen(_strQuote) - 1] - 1;
+	uint8_t	i32[4] = {0, 0, 0, 0};
+	uint8_t	iInt32 = 0;
+
+		// DEBUG("s: [%s]", _strQuote)
+	for (const char *s = _strQuote + 1; s <= strEnd; ++iInt32) {
+		// DEBUG("s: [%c] %p", *s, s)
+		if (*s != '\\') {
+			i32[iInt32] = *s;
+			++s;
+			continue;
 		}
+		++s;
+		if (strchr("abetnvfr\\'\"?", *s) != NULL) {
+			switch (*s) {
+				case 'a':	i32[iInt32] = '\a';	break;
+				case 'b':	i32[iInt32] = '\b';	break;
+				case 'e':	i32[iInt32] = '\e';	break;
+				case 't':	i32[iInt32] = '\t';	break;
+				case 'n':	i32[iInt32] = '\n';	break;
+				case 'v':	i32[iInt32] = '\v';	break;
+				case 'f':	i32[iInt32] = '\f';	break;
+				case 'r':	i32[iInt32] = '\r';	break;
+				case '\\':	i32[iInt32] = '\\';	break;
+				case '\'':	i32[iInt32] = '\'';	break;
+				case '\"':	i32[iInt32] = '\"';	break;
+				case '?':	i32[iInt32] = '\?';	break;
+			}
+			++s;
+			continue;
+		} if (*s != 'x') {
+			const char	*index = strchr(_baseOct, *s);
+			uint8_t		res = 0;
+
+			for (uint8_t j = 0; (j < 3) && (index != NULL); ++j) {
+				res <<= 3;
+				res += (index - _baseOct);
+				++s;
+
+				index = strchr(_baseOct, *s);
+			}
+			i32[iInt32] = res;
+			continue;
+		} else {
+			++s;
+			const char	*index = strchr(_baseHex, tolower(*s));
+			uint8_t		res = 0;
+
+			for (uint8_t j = 0; (j < 2) && (index != NULL); ++j) {
+				res <<= 4;
+				res += (index - _baseHex);
+				++s;
+				index = strchr(_baseHex, tolower(*s));
+			}
+			i32[iInt32] = res;
+			continue;
+		}
+		DEBUG("Que faije la char ");
 	}
+	uint32_t	res = 0;
+# if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
+	for (int8_t i = 0; i <= 3; ++i) {
+# elif __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
+	for (int8_t i = 3; i >= 0; --i) {
+# else
+# 	error "TF ARE WE DOING"
+# endif
+		res <<= 8;
+		res |= i32[i];
+	}
+	DEBUG("%u", res);
+	return (res);
 }
+
 
 int yywrap(void) { return 1; }
