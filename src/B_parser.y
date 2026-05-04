@@ -1,9 +1,5 @@
 %{
-	#include <stdio.h>
-	#include <stdlib.h>
-
-	void yyerror(const char *s) { fprintf(stderr, "Error: %s\n", s); }
-	int yylex(void);
+	#include "bCompiler.h"
 %}
 
 %union {
@@ -34,7 +30,8 @@
 %token FLOAT_MULT FLOAT_DIV FLOAT_ADD FLOAT_SUB FLOAT_EQUAL FLOAT_NOT_EQUAL FLOAT_INF FLOAT_INF_EQUAL FLOAT_SUP FLOAT_SUP_EQUAL 
 %token FLOAT_ASSIGN_MULT FLOAT_ASSIGN_DIV FLOAT_ASSIGN_ADD FLOAT_ASSIGN_SUB FLOAT_ASSIGN_EQUAL FLOAT_ASSIGN_NOT_EQUAL FLOAT_ASSIGN_INF FLOAT_ASSIGN_INF_EQUAL FLOAT_ASSIGN_SUP FLOAT_ASSIGN_SUP_EQUAL %token NOT TILDE
 
-%token MULT_LINE_CMT_START MULT_LINE_CMT_CORE MULT_LINE_CMT_END
+%token MULT_LINE_CMT_START MULT_LINE_CMT_END
+%token TRASH
 
 %%
 
@@ -46,6 +43,13 @@ definition:
 		global_definition ';'	{printf("Found global def");}
 	|	function_definition
 	;
+
+/* multi_line_comment:
+	MULT_LINE_CMT_START trash_list_0_ MULT_LINE_CMT_END
+
+trash_list_0_:
+		// Empty
+	|	TRASH trash_list_0_ */
 
 global_definition:
 		NAME
@@ -247,6 +251,13 @@ rvalue_postfix:
 	;
 
 %%
+
+void	yyerror (char const s[]) {
+  fprintf (stderr, "%s\n", s);
+}
+
+
+data_t	parsData;
 
 int main(void) {
 	yyparse();

@@ -13,10 +13,19 @@
 #ifndef BCOMPILER_H
 # define BCOMPILER_H
 
+# include <stdio.h>
+# include <stdlib.h>
+# include <stdint.h>
+
 # include "binaryOperation.h"
 
-typedef unsigned int	uint32_t;
-typedef int				int32_t;
+# define IN_COMMENT				(GET_BIT(parsData.flags, E_COMMENT))
+# define RETURN_TRASH(token)	do {										\
+									if (!IN_COMMENT)	\
+										return (token);						\
+								} while (0);
+
+
 
 // typedef struct {
 // 	char		fName[];
@@ -39,6 +48,10 @@ typedef struct {
 	uint64_t	flags;
 }	data_t;
 
-extern static data_t	parsData; 
+extern data_t	parsData;
+
+void	yyerror(const char s[]);
+int		yylex(void);
+
 
 #endif

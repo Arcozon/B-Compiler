@@ -3,7 +3,9 @@
 int main(void) {
 	int a, b, c;
 
-	b = 2 = 3;
+	b = 2;
 	printf("%d | %d | %d\n", a, b, c);
 
 }
+/*  
+*/

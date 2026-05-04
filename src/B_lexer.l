@@ -1,7 +1,7 @@
 %{
 	#include <ctype.h>
 	#include "B_parser.h"
-	#include "var_type.h"
+	#include "bCompiler.h"
 
 	uint32_t	ft_charToI32(const char *str);
 	#define DEBUG(str, ...)	{ fprintf(stderr, str, ##__VA_ARGS__); fprintf(stderr, "\n"); }
@@ -9,105 +9,124 @@
 
 %%
 
-"auto"		{return AUTO;}
-"extern"	{return EXTERN;}
+"auto"		{RETURN_TRASH(AUTO);}
+"extern"	{RETURN_TRASH(EXTERN);}
 
-"goto"		{return GOTO;}
+"goto"		{RETURN_TRASH(GOTO);}
 
-"switch"	{return SWITCH;}
-"case"		{return CASE;}
+"switch"	{RETURN_TRASH(SWITCH);}
+"case"		{RETURN_TRASH(CASE);}
 
-"while"		{return WHILE;}
+"while"		{RETURN_TRASH(WHILE);}
 
-"if"		{return IF;}
-"else"		{return ELSE;}
+"if"		{RETURN_TRASH(IF);}
+"else"		{RETURN_TRASH(ELSE);}
 
-"return"	{return RETURN;}
-"give"		{return GIVE;}
+"return"	{RETURN_TRASH(RETURN);}
+"give"		{RETURN_TRASH(GIVE);}
 
-"++"		{return INC;}
-"--"		{return DEC;}
+"++"		{RETURN_TRASH(INC);}
+"--"		{RETURN_TRASH(DEC);}
 
-"!"			{return NOT;}
-"~"			{return TILDE;}
+"!"			{RETURN_TRASH(NOT);}
+"~"			{RETURN_TRASH(TILDE);}
 
-"<<"		{return L_SHIFT;}
-">>"		{return R_SHIFT;}
-"*"			{return MULT;}
-"/"			{return DIV;}
-"%"			{return MODULO;}
-"+"			{return ADD;}
-"-"			{return SUB;}
-"|"			{return OR;}
-"&"			{return AND;}
-"^"			{return XOR;}
-"=="		{return EQUAL;}
-"!="		{return NOT_EQUAL;}
-"<"			{return INF;}
-"<="		{return INF_EQUAL;}
-">"			{return SUP;}
-">="		{return SUP_EQUAL;}
+"<<"		{RETURN_TRASH(L_SHIFT);}
+">>"		{RETURN_TRASH(R_SHIFT);}
+"*"			{RETURN_TRASH(MULT);}
+"/"			{RETURN_TRASH(DIV);}
+"%"			{RETURN_TRASH(MODULO);}
+"+"			{RETURN_TRASH(ADD);}
+"-"			{RETURN_TRASH(SUB);}
+"|"			{RETURN_TRASH(OR);}
+"&"			{RETURN_TRASH(AND);}
+"^"			{RETURN_TRASH(XOR);}
+"=="		{RETURN_TRASH(EQUAL);}
+"!="		{RETURN_TRASH(NOT_EQUAL);}
+"<"			{RETURN_TRASH(INF);}
+"<="		{RETURN_TRASH(INF_EQUAL);}
+">"			{RETURN_TRASH(SUP);}
+">="		{RETURN_TRASH(SUP_EQUAL);}
 
-"="			{return ASSIGN;}
-"=<<"		{return ASSIGN_L_SHIFT;}
-"=>>"		{return ASSIGN_R_SHIFT;}
-"=*"		{return ASSIGN_MULT;}
-"=/"		{return ASSIGN_DIV;}
-"=%"		{return ASSIGN_MODULO;}
-"=+"		{return ASSIGN_ADD;}
-"=-"		{return ASSIGN_SUB;}
-"=|"		{return ASSIGN_OR;}
-"=&"		{return ASSIGN_AND;}
-"=^"		{return ASSIGN_XOR;}
-"==="		{return ASSIGN_EQUAL;}
-"=!="		{return ASSIGN_NOT_EQUAL;}
-"=<"		{return ASSIGN_INF;}
-"=<="		{return ASSIGN_INF_EQUAL;}
-"=>"		{return ASSIGN_SUP;}
-"=>="		{return ASSIGN_SUP_EQUAL;}
+"="			{RETURN_TRASH(ASSIGN);}
+"=<<"		{RETURN_TRASH(ASSIGN_L_SHIFT);}
+"=>>"		{RETURN_TRASH(ASSIGN_R_SHIFT);}
+"=*"		{RETURN_TRASH(ASSIGN_MULT);}
+"=/"		{RETURN_TRASH(ASSIGN_DIV);}
+"=%"		{RETURN_TRASH(ASSIGN_MODULO);}
+"=+"		{RETURN_TRASH(ASSIGN_ADD);}
+"=-"		{RETURN_TRASH(ASSIGN_SUB);}
+"=|"		{RETURN_TRASH(ASSIGN_OR);}
+"=&"		{RETURN_TRASH(ASSIGN_AND);}
+"=^"		{RETURN_TRASH(ASSIGN_XOR);}
+"==="		{RETURN_TRASH(ASSIGN_EQUAL);}
+"=!="		{RETURN_TRASH(ASSIGN_NOT_EQUAL);}
+"=<"		{RETURN_TRASH(ASSIGN_INF);}
+"=<="		{RETURN_TRASH(ASSIGN_INF_EQUAL);}
+"=>"		{RETURN_TRASH(ASSIGN_SUP);}
+"=>="		{RETURN_TRASH(ASSIGN_SUP_EQUAL);}
 
-"++."		{return FLOAT_INC;}
-"--."		{return FLOAT_DEC;}
+"++."		{RETURN_TRASH(FLOAT_INC);}
+"--."		{RETURN_TRASH(FLOAT_DEC);}
 
-"*."		{return FLOAT_MULT;}
-"/."		{return FLOAT_DIV;}
-"+."		{return FLOAT_ADD;}
-"-."		{return FLOAT_SUB;}
-"==."		{return FLOAT_EQUAL;}		// {return EQUAL;}
-"!=."		{return FLOAT_NOT_EQUAL;}	// {return NOT_EQUAL;}
-"<."		{return FLOAT_INF;}
-"<=."		{return FLOAT_INF_EQUAL;}
-">."		{return FLOAT_SUP;}
-">=."		{return FLOAT_SUP_EQUAL;}
+"*."		{RETURN_TRASH(FLOAT_MULT);}
+"/."		{RETURN_TRASH(FLOAT_DIV);}
+"+."		{RETURN_TRASH(FLOAT_ADD);}
+"-."		{RETURN_TRASH(FLOAT_SUB);}
+"==."		{RETURN_TRASH(FLOAT_EQUAL);}		// {RETURN_TRASH(EQUAL);}
+"!=."		{RETURN_TRASH(FLOAT_NOT_EQUAL);}	// {RETURN_TRASH(NOT_EQUAL);}
+"<."		{RETURN_TRASH(FLOAT_INF);}
+"<=."		{RETURN_TRASH(FLOAT_INF_EQUAL);}
+">."		{RETURN_TRASH(FLOAT_SUP);}
+">=."		{RETURN_TRASH(FLOAT_SUP_EQUAL);}
 
-"=*."		{return FLOAT_ASSIGN_MULT;}
-"=/."		{return FLOAT_ASSIGN_DIV;}
-"=+."		{return FLOAT_ASSIGN_ADD;}
-"=-."		{return FLOAT_ASSIGN_SUB;}
-"===."		{return FLOAT_ASSIGN_EQUAL;}
-"=!=."		{return FLOAT_ASSIGN_NOT_EQUAL;}
-"=<."		{return FLOAT_ASSIGN_INF;}
-"=<=."		{return FLOAT_ASSIGN_INF_EQUAL;}
-"=>."		{return FLOAT_ASSIGN_SUP;}
-"=>=."		{return FLOAT_ASSIGN_SUP_EQUAL;}
+"=*."		{RETURN_TRASH(FLOAT_ASSIGN_MULT);}
+"=/."		{RETURN_TRASH(FLOAT_ASSIGN_DIV);}
+"=+."		{RETURN_TRASH(FLOAT_ASSIGN_ADD);}
+"=-."		{RETURN_TRASH(FLOAT_ASSIGN_SUB);}
+"===."		{RETURN_TRASH(FLOAT_ASSIGN_EQUAL);}
+"=!=."		{RETURN_TRASH(FLOAT_ASSIGN_NOT_EQUAL);}
+"=<."		{RETURN_TRASH(FLOAT_ASSIGN_INF);}
+"=<=."		{RETURN_TRASH(FLOAT_ASSIGN_INF_EQUAL);}
+"=>."		{RETURN_TRASH(FLOAT_ASSIGN_SUP);}
+"=>=."		{RETURN_TRASH(FLOAT_ASSIGN_SUP_EQUAL);}
 
-[A-Za-z_][A-Za-z0-9_]*		{ yylval.sval = strdup(yytext);		return NAME;}
+[A-Za-z_][A-Za-z0-9_]*		{ yylval.sval = strdup(yytext);		RETURN_TRASH(NAME);}
 
-0b[0-1]+		{	yylval.ival = strtol(yytext + 2, NULL, 2);	return INTEGER;}
-0[0-7]+			{	yylval.ival = strtol(yytext + 1, NULL, 8);	return INTEGER;}
-0x[0-9a-fA-F]+	{	yylval.ival = strtol(yytext + 2, NULL, 16);	return INTEGER;}
-[0-9]+			{	yylval.ival = strtol(yytext, NULL, 10);		return INTEGER;}
-[0-9]+\.[0-9]+?	{	yylval.fval = strtod(yytext, NULL);			return FLOAT;} // 3.   1.e6   5.982e-4
-
-
-'(\\([abetnvfr\\'"?]{1}|[0-7]{1,3}|x[0-9a-fA-F]{1,2})|[^\\']){1,4}'		{	yylval.ival = ft_charToI32(yytext); return INTEGER;} // Char
-
-\"(\\([abetnvfr\\'\"?]{1}|[0-7]{1,3}|x[0-9a-fA-F]{1,2})|[^\\\"])*\"		{	return STRING;} // Char
+0b[0-1]+		{	yylval.ival = strtol(yytext + 2, NULL, 2);	RETURN_TRASH(INTEGER);}
+0[0-7]+			{	yylval.ival = strtol(yytext + 1, NULL, 8);	RETURN_TRASH(INTEGER);}
+0x[0-9a-fA-F]+	{	yylval.ival = strtol(yytext + 2, NULL, 16);	RETURN_TRASH(INTEGER);}
+[0-9]+			{	yylval.ival = strtol(yytext, NULL, 10);		RETURN_TRASH(INTEGER);}
+[0-9]+\.[0-9]+?	{	yylval.fval = strtod(yytext, NULL);			RETURN_TRASH(FLOAT);} // 3.   1.e6   5.982e-4
 
 
+'(\\([abetnvfr\\'"?]{1}|[0-7]{1,3}|x[0-9a-fA-F]{1,2})|[^\\']){1,4}'	 {	// Char
+	yylval.ival = ft_charToI32(yytext);
+	RETURN_TRASH(INTEGER);
+}
 
-\/\*				{printf("Multiline comment start\n"); return MULT_LINE_CMT_START;}; // Mulit line Commemts
-*\/					{printf("Multiline comment end\n"); return MULT_LINE_CMT_END;}; // Mulit line Commemts
+\"(\\([abetnvfr\\'\"?]{1}|[0-7]{1,3}|x[0-9a-fA-F]{1,2})|[^\\\"])*\"	{
+	RETURN_TRASH(STRING);
+}
+
+\/\*	{	 // Multi line Comment Start
+	printf("Multiline comment start\n");
+	// if (IN_COMMENT)
+	// 	return (TRASH);
+	SET_BIT(parsData.flags, E_COMMENT);
+	// return(MULT_LINE_CMT_START);
+}
+
+\*\/	{	 // Multi line Comment End
+	printf("Multiline comment end\n");
+	if (!IN_COMMENT) {
+		yyerror("Comment end mark with comment start\n");
+	} else {
+		UNSET_BIT(parsData.flags, E_COMMENT);
+		// return (MULT_LINE_CMT_END);
+	}
+}
+
 \/\/.*				{DEBUG("Simple line comment");}; // Simple line cmd
 
 ";" 	{return ';';}
