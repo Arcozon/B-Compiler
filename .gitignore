@@ -2,3 +2,5 @@ gen/
 ybc/
 B
 test.o
+a.out
+test
