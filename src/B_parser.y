@@ -15,11 +15,14 @@
 
 %token AUTO EXTERN
 %token IF ELSE
-%right IF ELSE
+
 %token WHILE
-%token SWITCH CASE
+%token BREAK CONTINUE
+
+%token SWITCH CASE DEFAULT
+
 %token GOTO
-%token RETURN GIVE
+%token RETURN DROP
 
 %token INC DEC
 
@@ -30,11 +33,11 @@
 %token FLOAT_MULT FLOAT_DIV FLOAT_ADD FLOAT_SUB FLOAT_EQUAL FLOAT_NOT_EQUAL FLOAT_INF FLOAT_INF_EQUAL FLOAT_SUP FLOAT_SUP_EQUAL 
 %token FLOAT_ASSIGN_MULT FLOAT_ASSIGN_DIV FLOAT_ASSIGN_ADD FLOAT_ASSIGN_SUB FLOAT_ASSIGN_EQUAL FLOAT_ASSIGN_NOT_EQUAL FLOAT_ASSIGN_INF FLOAT_ASSIGN_INF_EQUAL FLOAT_ASSIGN_SUP FLOAT_ASSIGN_SUP_EQUAL %token NOT TILDE
 
-%token  MULT_LINE_CMT_END
-
-%start program
+%token MULTI_LINE_CMT_END
+%token UNKNOWN
 
 %%
+
 
 /*	██╗     ██╗███████╗████████╗
 	██║     ██║██╔════╝╚══██╔══╝
@@ -46,13 +49,18 @@
 name_0_:	/* Empty */	|	name_1_	;
 name_1_:	NAME	|	NAME ',' name_1_	;
 
-name_constant_0_1:	NAME constant_0_1	;
-name_constant_0_1_-_1_:	name_constant_0_1	|	name_constant_0_1 ',' name_constant_0_1_-_1_	;
-
 constant_0_1:	/* Empty */	|	constant	;
+
+name-constant_0_1:	NAME constant_0_1	;
+name-constant_0_1_--1_:	name-constant_0_1	|	name-constant_0_1 ',' name-constant_0_1_--1_	;
 
 ival_0_:	/* Empty */	|	ival_1_	;
 ival_1_:	ival	|	ival ',' ival_1_	;
+
+auto_extern_0_:		/* Empty */	|	auto auto_extern_0_	|	extern auto_extern_0_	;
+
+statement_0_:	/* Statement */	|	statement statement_0_	;
+
 
 /*	██████╗ ██████╗  ██████╗  ██████╗ ██████╗  █████╗ ███╗   ███╗
 	██╔══██╗██╔══██╗██╔═══██╗██╔════╝ ██╔══██╗██╔══██╗████╗ ████║
@@ -67,7 +75,7 @@ program:
 
 definition:
 		global_var_definition ';'
-	|	function_definition
+	|	function
 			{DEBUG("Found function");}
 	;
 
@@ -81,10 +89,95 @@ global_var_definition:
 constant:	INTEGER	|	STRING	|	CHAR	|	FLOAT	;
 ival:	NAME	|	constant	;
 
+
+/*	███████╗██╗   ██╗███╗   ██╗ ██████╗████████╗██╗ ██████╗ ███╗   ██╗
+	██╔════╝██║   ██║████╗  ██║██╔════╝╚══██╔══╝██║██╔═══██╗████╗  ██║
+	█████╗  ██║   ██║██╔██╗ ██║██║        ██║   ██║██║   ██║██╔██╗ ██║
+	██╔══╝  ██║   ██║██║╚██╗██║██║        ██║   ██║██║   ██║██║╚██╗██║
+	██║     ╚██████╔╝██║ ╚████║╚██████╗   ██║   ██║╚██████╔╝██║ ╚████║
+	╚═╝      ╚═════╝ ╚═╝  ╚═══╝ ╚═════╝   ╚═╝   ╚═╝ ╚═════╝ ╚═╝  ╚═══╝*/
+
+function:
+	function_definition function_declaration
+	;
+
+function_definition:
+		NAME '(' name_0_ ')'
+			{DEBUG("Function prototype")}
+	;
+
+function_declaration:
+		auto_extern_0_ statement	// Some weirdo can do that btw
+			{}
+	|	'{' auto_extern_0_ statement'}'
+			{}
+	;
+
+
+/*	 █████╗ ██╗   ██╗████████╗ ██████╗       ███████╗██╗  ██╗████████╗██████╗ ███╗   ██╗
+	██╔══██╗██║   ██║╚══██╔══╝██╔═══██╗      ██╔════╝╚██╗██╔╝╚══██╔══╝██╔══██╗████╗  ██║
+	███████║██║   ██║   ██║   ██║   ██║█████╗█████╗   ╚███╔╝    ██║   ██████╔╝██╔██╗ ██║
+	██╔══██║██║   ██║   ██║   ██║   ██║╚════╝██╔══╝   ██╔██╗    ██║   ██╔══██╗██║╚██╗██║
+	██║  ██║╚██████╔╝   ██║   ╚██████╔╝      ███████╗██╔╝ ██╗   ██║   ██║  ██║██║ ╚████║
+	╚═╝  ╚═╝ ╚═════╝    ╚═╝    ╚═════╝       ╚══════╝╚═╝  ╚═╝   ╚═╝   ╚═╝  ╚═╝╚═╝  ╚═══╝*/
+
+auto:
+		AUTO name-constant_0_1_--1_ ';'
+			{DEBUG("Auto declaration")}
+	;
+
+extern:
+		EXTERN name_1_ ';'
+			{DEBUG("Extern declaration")}
+	;
+
+
+/*	███████╗████████╗ █████╗ ████████╗███████╗███╗   ███╗███████╗███╗   ██╗████████╗
+	██╔════╝╚══██╔══╝██╔══██╗╚══██╔══╝██╔════╝████╗ ████║██╔════╝████╗  ██║╚══██╔══╝
+	███████╗   ██║   ███████║   ██║   █████╗  ██╔████╔██║█████╗  ██╔██╗ ██║   ██║   
+	╚════██║   ██║   ██╔══██║   ██║   ██╔══╝  ██║╚██╔╝██║██╔══╝  ██║╚██╗██║   ██║   
+	███████║   ██║   ██║  ██║   ██║   ███████╗██║ ╚═╝ ██║███████╗██║ ╚████║   ██║   
+	╚══════╝   ╚═╝   ╚═╝  ╚═╝   ╚═╝   ╚══════╝╚═╝     ╚═╝╚══════╝╚═╝  ╚═══╝   ╚═╝   */
+
+statement:
+		';'
+	|	label
+	|	CASE constant ':' statement
+	|	DEFAULT ':' statement
+	|	'{' statement_0_ '}'
+	|	IF '(' rvalue ')' statement
+	|	IF '(' rvalue ')' statement ELSE statement
+	|	WHILE '(' rvalue ')' statement
+	|	SWITCH rvalue statement
+	|	CONTINUE ';'
+	|	BREAK ';'
+	|	GOTO rvalue;
+	|	return ';'
+	|	drop ';'
+	|	rvalue ';'
+	;
+
+label: NAME ':' statement
+	{DEBUG("Label declaration")}
+;
+
+return:
+		RETURN
+	|	RETURN rvalue
+	;
+
+drop:
+		DROP
+	|	DROP rvalue
+	;
+
+rvalue:
+	;
+
 %%
 
 void	yyerror (char const s[]) {
-  fprintf (stderr, "%s\n", s);
+	fprintf (stderr, "%s\n", s);
 }
 
 
@@ -93,3 +186,4 @@ data_t	parsData;
 int main(void) {
 	yyparse();
 }
+

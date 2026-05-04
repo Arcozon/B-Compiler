@@ -30,7 +30,7 @@
 # define RESET	"\e[0m"
 
 # define IN_COMMENT				(GET_BIT(parsData.flags, E_COMMENT))
-# define RETURN_TRASH(token)	do {									\
+# define RETURN_COMMENT(token)	do {									\
 									if (!IN_COMMENT) {					\
 										DEBUG(GREEN BOLD "%s" RESET" ["ITALIC BLUE"%.10s" RESET "]"RESET, #token, yytext);	\
 										return (token);					\
@@ -45,6 +45,7 @@
 // 	char		fName[];
 //	// Var locales
 //	// Var extern
+//	// Labels
 // 	uint32_t	hash;
 // 	uint32_t	nArg;
 // }	fnc_t;
@@ -55,8 +56,8 @@ enum {
 
 typedef struct {
 	// fnc
-	// labels
 	// globals
+
 	// stack ?
 	// locals ?
 	uint64_t	flags;

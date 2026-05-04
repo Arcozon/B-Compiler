@@ -8,114 +8,118 @@
 
 %%
 
-"auto"		{RETURN_TRASH(AUTO);}
-"extern"	{RETURN_TRASH(EXTERN);}
+"auto"		{RETURN_COMMENT(AUTO);}
+"extrn"	{RETURN_COMMENT(EXTERN);}
 
-"goto"		{RETURN_TRASH(GOTO);}
+"goto"		{RETURN_COMMENT(GOTO);}
 
-"switch"	{RETURN_TRASH(SWITCH);}
-"case"		{RETURN_TRASH(CASE);}
+"while"		{RETURN_COMMENT(WHILE);}
+"break"		{RETURN_COMMENT(BREAK);}
+"continue"	{RETURN_COMMENT(CONTINUE);}
 
-"while"		{RETURN_TRASH(WHILE);}
+"switch"	{RETURN_COMMENT(SWITCH);}
+"case"		{RETURN_COMMENT(CASE);}
+"default"	{RETURN_COMMENT(DEFAULT);}
 
-"if"		{RETURN_TRASH(IF);}
-"else"		{RETURN_TRASH(ELSE);}
 
-"return"	{RETURN_TRASH(RETURN);}
-"give"		{RETURN_TRASH(GIVE);}
+"if"		{RETURN_COMMENT(IF);}
+"else"		{RETURN_COMMENT(ELSE);}
 
-"++"		{RETURN_TRASH(INC);}
-"--"		{RETURN_TRASH(DEC);}
+"return"	{RETURN_COMMENT(RETURN);}
+"drop"		{RETURN_COMMENT(DROP);}
 
-"!"			{RETURN_TRASH(NOT);}
-"~"			{RETURN_TRASH(TILDE);}
+"++"		{RETURN_COMMENT(INC);}
+"--"		{RETURN_COMMENT(DEC);}
 
-"<<"		{RETURN_TRASH(L_SHIFT);}
-">>"		{RETURN_TRASH(R_SHIFT);}
-"*"			{RETURN_TRASH(MULT);}
-"/"			{RETURN_TRASH(DIV);}
-"%"			{RETURN_TRASH(MODULO);}
-"+"			{RETURN_TRASH(ADD);}
-"-"			{RETURN_TRASH(SUB);}
-"|"			{RETURN_TRASH(OR);}
-"&"			{RETURN_TRASH(AND);}
-"^"			{RETURN_TRASH(XOR);}
-"=="		{RETURN_TRASH(EQUAL);}
-"!="		{RETURN_TRASH(NOT_EQUAL);}
-"<"			{RETURN_TRASH(INF);}
-"<="		{RETURN_TRASH(INF_EQUAL);}
-">"			{RETURN_TRASH(SUP);}
-">="		{RETURN_TRASH(SUP_EQUAL);}
+"!"			{RETURN_COMMENT(NOT);}
+"~"			{RETURN_COMMENT(TILDE);}
 
-"="			{RETURN_TRASH(ASSIGN);}
-"=<<"		{RETURN_TRASH(ASSIGN_L_SHIFT);}
-"=>>"		{RETURN_TRASH(ASSIGN_R_SHIFT);}
-"=*"		{RETURN_TRASH(ASSIGN_MULT);}
-"=/"		{RETURN_TRASH(ASSIGN_DIV);}
-"=%"		{RETURN_TRASH(ASSIGN_MODULO);}
-"=+"		{RETURN_TRASH(ASSIGN_ADD);}
-"=-"		{RETURN_TRASH(ASSIGN_SUB);}
-"=|"		{RETURN_TRASH(ASSIGN_OR);}
-"=&"		{RETURN_TRASH(ASSIGN_AND);}
-"=^"		{RETURN_TRASH(ASSIGN_XOR);}
-"==="		{RETURN_TRASH(ASSIGN_EQUAL);}
-"=!="		{RETURN_TRASH(ASSIGN_NOT_EQUAL);}
-"=<"		{RETURN_TRASH(ASSIGN_INF);}
-"=<="		{RETURN_TRASH(ASSIGN_INF_EQUAL);}
-"=>"		{RETURN_TRASH(ASSIGN_SUP);}
-"=>="		{RETURN_TRASH(ASSIGN_SUP_EQUAL);}
+"<<"		{RETURN_COMMENT(L_SHIFT);}
+">>"		{RETURN_COMMENT(R_SHIFT);}
+"*"			{RETURN_COMMENT(MULT);}
+"/"			{RETURN_COMMENT(DIV);}
+"%"			{RETURN_COMMENT(MODULO);}
+"+"			{RETURN_COMMENT(ADD);}
+"-"			{RETURN_COMMENT(SUB);}
+"|"			{RETURN_COMMENT(OR);}
+"&"			{RETURN_COMMENT(AND);}
+"^"			{RETURN_COMMENT(XOR);}
+"=="		{RETURN_COMMENT(EQUAL);}
+"!="		{RETURN_COMMENT(NOT_EQUAL);}
+"<"			{RETURN_COMMENT(INF);}
+"<="		{RETURN_COMMENT(INF_EQUAL);}
+">"			{RETURN_COMMENT(SUP);}
+">="		{RETURN_COMMENT(SUP_EQUAL);}
 
-"++."		{RETURN_TRASH(FLOAT_INC);}
-"--."		{RETURN_TRASH(FLOAT_DEC);}
+"="			{RETURN_COMMENT(ASSIGN);}
+"=<<"		{RETURN_COMMENT(ASSIGN_L_SHIFT);}
+"=>>"		{RETURN_COMMENT(ASSIGN_R_SHIFT);}
+"=*"		{RETURN_COMMENT(ASSIGN_MULT);}
+"=/"		{RETURN_COMMENT(ASSIGN_DIV);}
+"=%"		{RETURN_COMMENT(ASSIGN_MODULO);}
+"=+"		{RETURN_COMMENT(ASSIGN_ADD);}
+"=-"		{RETURN_COMMENT(ASSIGN_SUB);}
+"=|"		{RETURN_COMMENT(ASSIGN_OR);}
+"=&"		{RETURN_COMMENT(ASSIGN_AND);}
+"=^"		{RETURN_COMMENT(ASSIGN_XOR);}
+"==="		{RETURN_COMMENT(ASSIGN_EQUAL);}
+"=!="		{RETURN_COMMENT(ASSIGN_NOT_EQUAL);}
+"=<"		{RETURN_COMMENT(ASSIGN_INF);}
+"=<="		{RETURN_COMMENT(ASSIGN_INF_EQUAL);}
+"=>"		{RETURN_COMMENT(ASSIGN_SUP);}
+"=>="		{RETURN_COMMENT(ASSIGN_SUP_EQUAL);}
 
-"*."		{RETURN_TRASH(FLOAT_MULT);}
-"/."		{RETURN_TRASH(FLOAT_DIV);}
-"+."		{RETURN_TRASH(FLOAT_ADD);}
-"-."		{RETURN_TRASH(FLOAT_SUB);}
-"==."		{RETURN_TRASH(FLOAT_EQUAL);}		// {RETURN_TRASH(EQUAL);}
-"!=."		{RETURN_TRASH(FLOAT_NOT_EQUAL);}	// {RETURN_TRASH(NOT_EQUAL);}
-"<."		{RETURN_TRASH(FLOAT_INF);}
-"<=."		{RETURN_TRASH(FLOAT_INF_EQUAL);}
-">."		{RETURN_TRASH(FLOAT_SUP);}
-">=."		{RETURN_TRASH(FLOAT_SUP_EQUAL);}
+"++."		{RETURN_COMMENT(FLOAT_INC);}
+"--."		{RETURN_COMMENT(FLOAT_DEC);}
 
-"=*."		{RETURN_TRASH(FLOAT_ASSIGN_MULT);}
-"=/."		{RETURN_TRASH(FLOAT_ASSIGN_DIV);}
-"=+."		{RETURN_TRASH(FLOAT_ASSIGN_ADD);}
-"=-."		{RETURN_TRASH(FLOAT_ASSIGN_SUB);}
-"===."		{RETURN_TRASH(FLOAT_ASSIGN_EQUAL);}
-"=!=."		{RETURN_TRASH(FLOAT_ASSIGN_NOT_EQUAL);}
-"=<."		{RETURN_TRASH(FLOAT_ASSIGN_INF);}
-"=<=."		{RETURN_TRASH(FLOAT_ASSIGN_INF_EQUAL);}
-"=>."		{RETURN_TRASH(FLOAT_ASSIGN_SUP);}
-"=>=."		{RETURN_TRASH(FLOAT_ASSIGN_SUP_EQUAL);}
+"*."		{RETURN_COMMENT(FLOAT_MULT);}
+"/."		{RETURN_COMMENT(FLOAT_DIV);}
+"+."		{RETURN_COMMENT(FLOAT_ADD);}
+"-."		{RETURN_COMMENT(FLOAT_SUB);}
+"==."		{RETURN_COMMENT(FLOAT_EQUAL);}		// {RETURN_COMMENT(EQUAL);}
+"!=."		{RETURN_COMMENT(FLOAT_NOT_EQUAL);}	// {RETURN_COMMENT(NOT_EQUAL);}
+"<."		{RETURN_COMMENT(FLOAT_INF);}
+"<=."		{RETURN_COMMENT(FLOAT_INF_EQUAL);}
+">."		{RETURN_COMMENT(FLOAT_SUP);}
+">=."		{RETURN_COMMENT(FLOAT_SUP_EQUAL);}
 
-[A-Za-z_][A-Za-z0-9_]*		{ yylval.sval = strdup(yytext);		RETURN_TRASH(NAME);}
+"=*."		{RETURN_COMMENT(FLOAT_ASSIGN_MULT);}
+"=/."		{RETURN_COMMENT(FLOAT_ASSIGN_DIV);}
+"=+."		{RETURN_COMMENT(FLOAT_ASSIGN_ADD);}
+"=-."		{RETURN_COMMENT(FLOAT_ASSIGN_SUB);}
+"===."		{RETURN_COMMENT(FLOAT_ASSIGN_EQUAL);}
+"=!=."		{RETURN_COMMENT(FLOAT_ASSIGN_NOT_EQUAL);}
+"=<."		{RETURN_COMMENT(FLOAT_ASSIGN_INF);}
+"=<=."		{RETURN_COMMENT(FLOAT_ASSIGN_INF_EQUAL);}
+"=>."		{RETURN_COMMENT(FLOAT_ASSIGN_SUP);}
+"=>=."		{RETURN_COMMENT(FLOAT_ASSIGN_SUP_EQUAL);}
 
-0b[0-1]+		{	yylval.ival = strtol(yytext + 2, NULL, 2);	RETURN_TRASH(INTEGER);}
-0[0-7]+			{	yylval.ival = strtol(yytext + 1, NULL, 8);	RETURN_TRASH(INTEGER);}
-0x[0-9a-fA-F]+	{	yylval.ival = strtol(yytext + 2, NULL, 16);	RETURN_TRASH(INTEGER);}
-[0-9]+			{	yylval.ival = strtol(yytext, NULL, 10);		RETURN_TRASH(INTEGER);}
-[0-9]+\.[0-9]+?	{	yylval.fval = strtod(yytext, NULL);			RETURN_TRASH(FLOAT);} // 3.   1.e6   5.982e-4
+[A-Za-z_][A-Za-z0-9_]*		{ yylval.sval = strdup(yytext);		RETURN_COMMENT(NAME);}
 
-";" 	{RETURN_TRASH(';');}
-"," 	{RETURN_TRASH(',');}
-"?" 	{RETURN_TRASH('?');}
-":" 	{RETURN_TRASH(':');}
-"{" 	{RETURN_TRASH('{');}
-"}" 	{RETURN_TRASH('}');}
-"[" 	{RETURN_TRASH('[');}
-"]" 	{RETURN_TRASH(']');}
-"(" 	{RETURN_TRASH('(');}
-")" 	{RETURN_TRASH(')');}
+0b[0-1]+		{	yylval.ival = strtol(yytext + 2, NULL, 2);	RETURN_COMMENT(INTEGER);}
+0[0-7]+			{	yylval.ival = strtol(yytext + 1, NULL, 8);	RETURN_COMMENT(INTEGER);}
+0x[0-9a-fA-F]+	{	yylval.ival = strtol(yytext + 2, NULL, 16);	RETURN_COMMENT(INTEGER);}
+[0-9]+			{	yylval.ival = strtol(yytext, NULL, 10);		RETURN_COMMENT(INTEGER);}
+[0-9]+\.[0-9]+?	{	yylval.fval = strtod(yytext, NULL);			RETURN_COMMENT(FLOAT);} // 3.   1.e6   5.982e-4
+
+";" 	{RETURN_COMMENT(';');}
+"," 	{RETURN_COMMENT(',');}
+"?" 	{RETURN_COMMENT('?');}
+":" 	{RETURN_COMMENT(':');}
+"{" 	{RETURN_COMMENT('{');}
+"}" 	{RETURN_COMMENT('}');}
+"[" 	{RETURN_COMMENT('[');}
+"]" 	{RETURN_COMMENT(']');}
+"(" 	{RETURN_COMMENT('(');}
+")" 	{RETURN_COMMENT(')');}
 
 '(\\([abetnvfr\\'"?]{1}|[0-7]{1,3}|x[0-9a-fA-F]{1,2})|[^\\']){1,4}'	 {	// Char
 	yylval.ival = ft_charToI32(yytext);
-	RETURN_TRASH(INTEGER);
+	RETURN_COMMENT(INTEGER);
 }
 
 \"(\\([abetnvfr\\'\"?]{1}|[0-7]{1,3}|x[0-9a-fA-F]{1,2})|[^\\\"])*\"	{
-	RETURN_TRASH(STRING);
+	RETURN_COMMENT(STRING);
 }
 
 \/\*	{	 // Multi line Comment Start
@@ -125,14 +129,13 @@
 \*\/	{	 // Multi line Comment End
 	if (!IN_COMMENT) {
 		yyerror("Comment end mark with comment start\n");
-		return (MULT_LINE_CMT_END);
+		return (MULTI_LINE_CMT_END);
 	} else {
 		UNSET_BIT(parsData.flags, E_COMMENT);
 	}
 }
 
-\/\/.*				{DEBUG("Simple line comment");}; // Simple line cmd
-
+\/\/.*			{DEBUG("Simple line comment");}; // Simple line cmd
 
 
 [ \n\t]	{}
