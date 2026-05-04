@@ -17,6 +17,7 @@ YACC	=  bison -d
 LEX	=  flex
 
 all: $(NAME)
+	./$(NAME)
 
 $(NAME):	$(YACC_C_GEN)	$(LEX_C_GEN)
 	cc $^ -I$(D_GEN) -I$(D_SRC) -o $@

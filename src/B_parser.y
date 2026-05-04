@@ -23,33 +23,19 @@
 %token WHILE
 %token SWITCH CASE
 %token GOTO
-%token RETURN
+%token RETURN GIVE
 
 %token INC DEC
 
 %token L_SHIFT R_SHIFT MULT DIV MODULO ADD SUB OR AND EQUAL XOR NOT_EQUAL INF INF_EQUAL SUP SUP_EQUAL
-/* %right L_SHIFT R_SHIFT MULT DIV MODULO ADD SUB OR AND XOR EQUAL NOT_EQUAL INF INF_EQUAL SUP SUP_EQUAL */
 %token ASSIGN ASSIGN_L_SHIFT ASSIGN_R_SHIFT ASSIGN_MULT ASSIGN_DIV ASSIGN_MODULO ASSIGN_ADD ASSIGN_SUB ASSIGN_OR ASSIGN_AND ASSIGN_XOR ASSIGN_EQUAL ASSIGN_NOT_EQUAL ASSIGN_INF ASSIGN_INF_EQUAL ASSIGN_SUP ASSIGN_SUP_EQUAL
-/* %right ASSIGN ASSIGN_L_SHIFT ASSIGN_R_SHIFT ASSIGN_MULT ASSIGN_DIV ASSIGN_MODULO ASSIGN_ADD ASSIGN_SUB ASSIGN_OR ASSIGN_AND ASSIGN_XOR ASSIGN_EQUAL ASSIGN_NOT_EQUAL ASSIGN_INF ASSIGN_INF_EQUAL ASSIGN_SUP ASSIGN_SUP_EQUAL */
 
-/* %left OR
-%left AND
-%left XOR
-%left EQUAL NOT_EQUAL
-%left INF INF_EQUAL SUP SUP_EQUAL
-%left L_SHIFT R_SHIFT
-%left ADD SUB
-%left MULT DIV MODULO */
+%token FLOAT_INC FLOAT_DEC 
+%token FLOAT_MULT FLOAT_DIV FLOAT_ADD FLOAT_SUB FLOAT_EQUAL FLOAT_NOT_EQUAL FLOAT_INF FLOAT_INF_EQUAL FLOAT_SUP FLOAT_SUP_EQUAL 
+%token FLOAT_ASSIGN_MULT FLOAT_ASSIGN_DIV FLOAT_ASSIGN_ADD FLOAT_ASSIGN_SUB FLOAT_ASSIGN_EQUAL FLOAT_ASSIGN_NOT_EQUAL FLOAT_ASSIGN_INF FLOAT_ASSIGN_INF_EQUAL FLOAT_ASSIGN_SUP FLOAT_ASSIGN_SUP_EQUAL %token NOT TILDE
 
+%token MULT_LINE_CMT_START MULT_LINE_CMT_CORE MULT_LINE_CMT_END
 
-/* %right INC DEC */
-/* %nonassoc INC DEC  */
-/* %right PRE_INC_DEC */
-%token NOT TILDE
-
-%nonassoc ADDR_OF
-
-/* %type <sval> string */
 %%
 
 program:
@@ -108,14 +94,20 @@ ival_list_1_:
 	;
 
 function_definition:
-	NAME '(' name_list_0_ ')' statement
+	NAME '(' name_list_0_ ')' simple_statement
+	NAME '(' name_list_0_ ')' '{' statement '}'
 	;
-
+simple_statement:
+		RETURN rvalue_list_0_1 ';'
+	|	GIVE rvalue_list_0_1 ';'
+	|	rvalue ';'
+	|	';'
+; 
 statement:
-		AUTO name_constant_0_1_list_1_ ';' statement
-	|	EXTERN name_list_1_ ';' statement
-	|	NAME ':' statement
-	|	CASE constant ':' statement
+		AUTO name_constant_0_1_list_1_ ';'
+	|	EXTERN name_list_1_ ';'
+	|	NAME ':'
+	/* |	CASE constant ':' statement */
 	|	'{' statement_list_0_ '}'
 	|	IF '(' rvalue ')' statement
 	|	IF '(' rvalue ')' statement ELSE statement
@@ -165,6 +157,7 @@ rvalue_assign:
 	|	lvalue ASSIGN_R_SHIFT rvalue_assign
 	|	lvalue ASSIGN_INF rvalue_assign
 	|	lvalue ASSIGN_INF_EQUAL rvalue_assign
+	|	lvalue ASSIGN_SUP rvalue_assign
 	|	lvalue ASSIGN_SUP_EQUAL rvalue_assign
 	|	lvalue ASSIGN_EQUAL rvalue_assign
 	|	lvalue ASSIGN_NOT_EQUAL rvalue_assign
