@@ -36,20 +36,13 @@
 %%
 
 program:
-		{printf("Found empty prog");} // Empty
+		{DEBUG("Found empty prog");} // Empty
 	|	definition
 
 definition:
-		global_definition ';'	{printf("Found global def");}
-	|	function_definition
+		global_definition ';'	{DEBUG("Found global def");}
+	|	function_definition		{DEBUG("Found function");}
 	;
-
-/* multi_line_comment:
-	MULT_LINE_CMT_START trash_list_0_ MULT_LINE_CMT_END
-
-trash_list_0_:
-		// Empty
-	|	TRASH trash_list_0_ */
 
 global_definition:
 		NAME
@@ -98,8 +91,9 @@ ival_list_1_:
 	;
 
 function_definition:
-	NAME '(' name_list_0_ ')' simple_statement
-	NAME '(' name_list_0_ ')' '{' statement '}'
+		/* NAME '(' name_list_0_ ')' simple_statement */
+	/* |	NAME '(' name_list_0_ ')' '{' statement '}' */
+		NAME '(' name_list_0_ ')' '{' statement '}'
 	;
 simple_statement:
 		RETURN rvalue_list_0_1 ';'

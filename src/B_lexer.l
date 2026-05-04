@@ -99,6 +99,16 @@
 [0-9]+			{	yylval.ival = strtol(yytext, NULL, 10);		RETURN_TRASH(INTEGER);}
 [0-9]+\.[0-9]+?	{	yylval.fval = strtod(yytext, NULL);			RETURN_TRASH(FLOAT);} // 3.   1.e6   5.982e-4
 
+";" 	{RETURN_TRASH(';');}
+"," 	{RETURN_TRASH(',');}
+"?" 	{RETURN_TRASH('?');}
+":" 	{RETURN_TRASH(':');}
+"{" 	{RETURN_TRASH('{');}
+"}" 	{RETURN_TRASH('}');}
+"[" 	{RETURN_TRASH('[');}
+"]" 	{RETURN_TRASH(']');}
+"(" 	{RETURN_TRASH('(');}
+")" 	{RETURN_TRASH(')');}
 
 '(\\([abetnvfr\\'"?]{1}|[0-7]{1,3}|x[0-9a-fA-F]{1,2})|[^\\']){1,4}'	 {	// Char
 	yylval.ival = ft_charToI32(yytext);
@@ -110,35 +120,21 @@
 }
 
 \/\*	{	 // Multi line Comment Start
-	printf("Multiline comment start\n");
-	// if (IN_COMMENT)
-	// 	return (TRASH);
 	SET_BIT(parsData.flags, E_COMMENT);
-	// return(MULT_LINE_CMT_START);
 }
 
 \*\/	{	 // Multi line Comment End
-	printf("Multiline comment end\n");
 	if (!IN_COMMENT) {
 		yyerror("Comment end mark with comment start\n");
+		return (MULT_LINE_CMT_END);
 	} else {
 		UNSET_BIT(parsData.flags, E_COMMENT);
-		// return (MULT_LINE_CMT_END);
 	}
 }
 
 \/\/.*				{DEBUG("Simple line comment");}; // Simple line cmd
 
-";" 	{return ';';}
-"," 	{return ',';}
-"?" 	{return '?';}
-":" 	{return ':';}
-"{" 	{return '{';}
-"}" 	{return '}';}
-"[" 	{return '[';}
-"]" 	{return ']';}
-"(" 	{return '(';}
-")" 	{return ')';}
+
 
 [ \n\t]	{}
 
@@ -212,7 +208,7 @@ uint32_t	ft_charToI32(const char *_strQuote) {
 # elif __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
 	for (int8_t i = 3; i >= 0; --i) {
 # else
-# 	error "TF ARE WE DOING"
+# 	error "TF ARE WE DOING NO LSB NO MSB ?"
 	{	int	i = 0;
 		yyerror("Pas cool ducoup on est NI LSB NI MSB ????\n");
 # endif

@@ -19,10 +19,22 @@
 
 # include "binaryOperation.h"
 
+# define BOLD	"\e[1m"
+# define ITALIC	"\e[13m"
+# define RED	"\e[31m"
+# define BLUE	"\e[34m"
+# define GREEN	"\e[32m"
+# define CYAN	"\e[36m"
+# define YELLOW	"\e[33m"
+# define MAGENTA	"\e[35m"
+# define RESET	"\e[0m"
+
 # define IN_COMMENT				(GET_BIT(parsData.flags, E_COMMENT))
-# define RETURN_TRASH(token)	do {										\
-									if (!IN_COMMENT)	\
-										return (token);						\
+# define RETURN_TRASH(token)	do {									\
+									if (!IN_COMMENT) {					\
+										DEBUG(GREEN BOLD "%s" RESET" ["ITALIC BLUE"%.10s" RESET "]"RESET, #token, yytext);	\
+										return (token);					\
+									}									\
 								} while (0);
 
 
