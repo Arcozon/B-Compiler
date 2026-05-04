@@ -59,8 +59,10 @@ ival_1_:	ival	|	ival ',' ival_1_	;
 
 auto_extern_0_:		/* Empty */	|	auto auto_extern_0_	|	extern auto_extern_0_	;
 
-statement_0_:	/* Statement */	|	statement statement_0_	;
+statement_0_:	/* Empty */	|	statement statement_0_	;
 
+rvalue_0_: /* Empty */ | rvalue_1_
+rvalue_1_: rvalue | rvalue ',' rvalue_1_
 
 /*	██████╗ ██████╗  ██████╗  ██████╗ ██████╗  █████╗ ███╗   ███╗
 	██╔══██╗██╔══██╗██╔═══██╗██╔════╝ ██╔══██╗██╔══██╗████╗ ████║
@@ -140,8 +142,7 @@ extern:
 	╚══════╝   ╚═╝   ╚═╝  ╚═╝   ╚═╝   ╚══════╝╚═╝     ╚═╝╚══════╝╚═╝  ╚═══╝   ╚═╝   */
 
 statement:
-		';'
-	|	label
+		label
 	|	CASE constant ':' statement
 	|	DEFAULT ':' statement
 	|	'{' statement_0_ '}'
@@ -154,7 +155,7 @@ statement:
 	|	GOTO rvalue;
 	|	return ';'
 	|	drop ';'
-	|	rvalue ';'
+	|	rvalue_0_ ';'
 	;
 
 label: NAME ':' statement
@@ -172,6 +173,51 @@ drop:
 	;
 
 rvalue:
+		'(' rvalue_1_ ')'
+	/* |	LAMBDA */
+	|	lvalue
+	|	constant
+	|	lvalue ASSIGN rvalue
+	|	pre-inc_dec
+	|	post-inc_dec
+	|	unary-rvalue
+	|	AND lvalue
+	|	rvalue-binary-rvalue
+	|	ternary
+	|	function_call
+	;
+
+pre-inc_dec:
+		INC lvalue
+	|	DEC lvalue
+	;
+
+post-inc_dec:
+		lvalue INC 
+	|	lvalue DEC 
+	;
+
+unary-rvalue:
+		SUB rvalue
+	|	NOT rvalue
+	|	TILDE rvalue
+	;
+
+ternary:
+	rvalue '?' rvalue ':' rvalue
+	;
+
+rvalue-binary-rvalue:
+	;	// LONG
+
+lvalue:
+		NAME
+	|	MULT rvalue
+	|	rvalue '[' rvalue ']'
+	;
+
+function_call:
+	rvalue '(' rvalue_0_ ')'
 	;
 
 %%
