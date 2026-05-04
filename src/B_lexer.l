@@ -4,7 +4,6 @@
 	#include "bCompiler.h"
 
 	uint32_t	ft_charToI32(const char *str);
-	#define DEBUG(str, ...)	{ fprintf(stderr, str, ##__VA_ARGS__); fprintf(stderr, "\n"); }
 %}
 
 %%

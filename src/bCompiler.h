@@ -37,6 +37,8 @@
 									}									\
 								} while (0);
 
+# define DEBUG(str, ...)	{ fprintf(stderr, str, ##__VA_ARGS__); fprintf(stderr, "\n"); }
+
 
 
 // typedef struct {
