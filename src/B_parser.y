@@ -172,12 +172,19 @@ drop:
 	|	DROP rvalue
 	;
 
+/*	██████╗       ██╗   ██╗ █████╗ ██╗     ██╗   ██╗███████╗
+	██╔══██╗      ██║   ██║██╔══██╗██║     ██║   ██║██╔════╝
+	██████╔╝█████╗██║   ██║███████║██║     ██║   ██║█████╗  
+	██╔══██╗╚════╝╚██╗ ██╔╝██╔══██║██║     ██║   ██║██╔══╝  
+	██║  ██║       ╚████╔╝ ██║  ██║███████╗╚██████╔╝███████╗
+	╚═╝  ╚═╝        ╚═══╝  ╚═╝  ╚═╝╚══════╝ ╚═════╝ ╚══════╝*/
+
 rvalue:
 		'(' rvalue_1_ ')'
 	/* |	LAMBDA */
 	|	lvalue
 	|	constant
-	|	lvalue ASSIGN rvalue
+	|	assignment
 	|	pre-inc_dec
 	|	post-inc_dec
 	|	unary-rvalue
@@ -220,6 +227,73 @@ function_call:
 	rvalue '(' rvalue_0_ ')'
 	;
 
+/*	 █████╗ ███████╗███████╗██╗ ██████╗ ███╗   ██╗███████╗███╗   ███╗███████╗███╗   ██╗████████╗
+	██╔══██╗██╔════╝██╔════╝██║██╔════╝ ████╗  ██║██╔════╝████╗ ████║██╔════╝████╗  ██║╚══██╔══╝
+	███████║███████╗███████╗██║██║  ███╗██╔██╗ ██║█████╗  ██╔████╔██║█████╗  ██╔██╗ ██║   ██║   
+	██╔══██║╚════██║╚════██║██║██║   ██║██║╚██╗██║██╔══╝  ██║╚██╔╝██║██╔══╝  ██║╚██╗██║   ██║   
+	██║  ██║███████║███████║██║╚██████╔╝██║ ╚████║███████╗██║ ╚═╝ ██║███████╗██║ ╚████║   ██║   
+	╚═╝  ╚═╝╚══════╝╚══════╝╚═╝ ╚═════╝ ╚═╝  ╚═══╝╚══════╝╚═╝     ╚═╝╚══════╝╚═╝  ╚═══╝   ╚═╝   */
+
+assignment:
+	   lvalue assign_opp rvalue;
+
+assign_opp:
+		ASSIGN
+			{}
+	|	ASSIGN_L_SHIFT
+			{}
+	|	ASSIGN_R_SHIFT
+			{}
+	|	ASSIGN_MULT
+			{}
+	|	ASSIGN_DIV
+			{}
+	|	ASSIGN_MODULO
+			{}
+	|	ASSIGN_ADD
+			{}
+	|	ASSIGN_SUB
+			{}
+	|	ASSIGN_OR
+			{}
+	|	ASSIGN_AND
+			{}
+	|	ASSIGN_XOR
+			{}
+	|	ASSIGN_EQUAL
+			{}
+	|	ASSIGN_NOT_EQUAL
+			{}
+	|	ASSIGN_INF
+			{}
+	|	ASSIGN_INF_EQUAL
+			{}
+	|	ASSIGN_SUP
+			{}
+	|	ASSIGN_SUP_EQUAL
+			{}
+	|	FLOAT_ASSIGN_MULT
+			{}
+	|	FLOAT_ASSIGN_DIV
+			{}
+	|	FLOAT_ASSIGN_ADD
+			{}
+	|	FLOAT_ASSIGN_SUB
+			{}
+	|	FLOAT_ASSIGN_EQUAL
+			{}
+	|	FLOAT_ASSIGN_NOT_EQUAL
+			{}
+	|	FLOAT_ASSIGN_INF
+			{}
+	|	FLOAT_ASSIGN_INF_EQUAL
+			{}
+	|	FLOAT_ASSIGN_SUP
+			{}
+	|	FLOAT_ASSIGN_SUP_EQUAL
+			{}
+	;
+
 %%
 
 void	yyerror (char const s[]) {
@@ -232,4 +306,3 @@ data_t	parsData;
 int main(void) {
 	yyparse();
 }
-
