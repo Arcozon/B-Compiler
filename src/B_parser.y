@@ -111,7 +111,7 @@ function_definition:
 function_declaration:
 		auto_extern_0_ statement	// Some weirdo can do that btw
 			{}
-	|	'{' auto_extern_0_ statement'}'
+	|	'{' auto_extern_0_ statement_0_ '}'
 			{}
 	;
 
@@ -152,7 +152,7 @@ statement:
 	|	SWITCH rvalue statement
 	|	CONTINUE ';'
 	|	BREAK ';'
-	|	GOTO rvalue;
+	|	GOTO rvalue ';'
 	|	return ';'
 	|	drop ';'
 	|	rvalue_0_ ';'
