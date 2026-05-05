@@ -36,6 +36,8 @@
 %token MULTI_LINE_CMT_END
 %token UNKNOWN
 
+%left INC SUB FLOAT_INC FLOAT_SUB
+
 %%
 
 
@@ -111,9 +113,22 @@ function_definition:
 function_declaration:
 		auto_extern_0_ statement	// Some weirdo can do that btw
 			{}
-	|	'{' auto_extern_0_ statement_0_ '}'
-			{}
 	;
+
+lambda_declaration:
+		'(' name_0_ ')' scope
+	;
+
+/*	███████╗ ██████╗ ██████╗ ██████╗ ███████╗
+	██╔════╝██╔════╝██╔═══██╗██╔══██╗██╔════╝
+	███████╗██║     ██║   ██║██████╔╝█████╗  
+	╚════██║██║     ██║   ██║██╔═══╝ ██╔══╝  
+	███████║╚██████╗╚██████╔╝██║     ███████╗
+	╚══════╝ ╚═════╝ ╚═════╝ ╚═╝     ╚══════╝*/
+
+scope:
+     	'{'	auto_extern_0_ statement_0_	'}'
+     ;
 
 
 /*	 █████╗ ██╗   ██╗████████╗ ██████╗       ███████╗██╗  ██╗████████╗██████╗ ███╗   ██╗
@@ -145,7 +160,6 @@ statement:
 		label
 	|	CASE constant ':' statement
 	|	DEFAULT ':' statement
-	|	'{' statement_0_ '}'
 	|	IF '(' rvalue ')' statement
 	|	IF '(' rvalue ')' statement ELSE statement
 	|	WHILE '(' rvalue ')' statement
@@ -155,12 +169,14 @@ statement:
 	|	GOTO rvalue ';'
 	|	return ';'
 	|	drop ';'
+	|	scope
 	|	rvalue_0_ ';'
 	;
 
-label: NAME ':' statement
-	{DEBUG("Label declaration")}
-;
+label:
+    		 NAME ':' statement
+			{DEBUG("Label declaration")}
+	;
 
 return:
 		RETURN
@@ -172,6 +188,7 @@ drop:
 	|	DROP rvalue
 	;
 
+
 /*	██████╗       ██╗   ██╗ █████╗ ██╗     ██╗   ██╗███████╗
 	██╔══██╗      ██║   ██║██╔══██╗██║     ██║   ██║██╔════╝
 	██████╔╝█████╗██║   ██║███████║██║     ██║   ██║█████╗  
@@ -181,7 +198,8 @@ drop:
 
 rvalue:
 		'(' rvalue_1_ ')'
-	/* |	LAMBDA */
+	|	lambda_declaration
+	|	scope
 	|	lvalue
 	|	constant
 	|	assignment
@@ -189,7 +207,7 @@ rvalue:
 	|	post-inc_dec
 	|	unary-rvalue
 	|	AND lvalue
-	|	rvalue-binary-rvalue
+	|	rvalue-opp-rvalue
 	|	ternary
 	|	function_call
 	;
@@ -197,15 +215,22 @@ rvalue:
 pre-inc_dec:
 		INC lvalue
 	|	DEC lvalue
+	|	FLOAT_INC lvalue
+	|	FLOAT_DEC lvalue
 	;
 
 post-inc_dec:
 		lvalue INC 
 	|	lvalue DEC 
+	|	lvalue FLOAT_INC
+	|	lvalue FLOAT_DEC
 	;
 
 unary-rvalue:
-		SUB rvalue
+		ADD rvalue
+	|	SUB rvalue
+	|	FLOAT_ADD rvalue
+	|	FLOAT_SUB rvalue
 	|	NOT rvalue
 	|	TILDE rvalue
 	;
@@ -213,9 +238,6 @@ unary-rvalue:
 ternary:
 	rvalue '?' rvalue ':' rvalue
 	;
-
-rvalue-binary-rvalue:
-	;	// LONG
 
 lvalue:
 		NAME
@@ -226,6 +248,75 @@ lvalue:
 function_call:
 	rvalue '(' rvalue_0_ ')'
 	;
+
+
+/*	██████╗ ██╗   ██╗ █████╗ ██╗       ██████╗ ██████╗ ██████╗       ██████╗ ██╗   ██╗ █████╗ ██╗     
+	██╔══██╗██║   ██║██╔══██╗██║      ██╔═══██╗██╔══██╗██╔══██╗      ██╔══██╗██║   ██║██╔══██╗██║     
+	██████╔╝██║   ██║███████║██║█████╗██║   ██║██████╔╝██████╔╝█████╗██████╔╝██║   ██║███████║██║     
+	██╔══██╗╚██╗ ██╔╝██╔══██║██║╚════╝██║   ██║██╔═══╝ ██╔═══╝ ╚════╝██╔══██╗╚██╗ ██╔╝██╔══██║██║     
+	██║  ██║ ╚████╔╝ ██║  ██║███████╗ ╚██████╔╝██║     ██║           ██║  ██║ ╚████╔╝ ██║  ██║███████╗
+	╚═╝  ╚═╝  ╚═══╝  ╚═╝  ╚═╝╚══════╝  ╚═════╝ ╚═╝     ╚═╝           ╚═╝  ╚═╝  ╚═══╝  ╚═╝  ╚═╝╚══════╝*/
+
+rvalue-opp-rvalue:
+		rvalue opp_binary rvalue
+		{}
+	;
+
+opp_binary:
+		L_SHIFT
+			{}
+	|	R_SHIFT
+			{}
+	|	MULT
+			{}
+	|	DIV
+			{}
+	|	MODULO
+			{}
+	|	ADD
+			{}
+	|	SUB
+			{}
+	|	OR
+			{}
+	|	AND
+			{}
+	|	XOR
+			{}
+	|	EQUAL
+			{}
+	|	NOT_EQUAL
+			{}
+	|	INF
+			{}
+	|	INF_EQUAL
+			{}
+	|	SUP
+			{}
+	|	SUP_EQUAL
+			{}
+	|	FLOAT_MULT
+			{}
+	|	FLOAT_DIV
+			{}
+	|	FLOAT_ADD
+			{}
+	|	FLOAT_SUB
+			{}
+	|	EQUAL
+			{}
+	|	NOT_EQUAL
+			{}
+	|	FLOAT_INF
+			{}
+	|	FLOAT_INF_EQUAL
+			{}
+	|	FLOAT_SUP
+			{}
+	|	FLOAT_SUP_EQUAL
+			{}
+	;
+
 
 /*	 █████╗ ███████╗███████╗██╗ ██████╗ ███╗   ██╗███████╗███╗   ███╗███████╗███╗   ██╗████████╗
 	██╔══██╗██╔════╝██╔════╝██║██╔════╝ ████╗  ██║██╔════╝████╗ ████║██╔════╝████╗  ██║╚══██╔══╝
