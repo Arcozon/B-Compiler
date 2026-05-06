@@ -380,8 +380,6 @@ assign_opp:
 			{}
 	|	FLOAT_ASSIGN_SUP_EQUAL
 			{}
-	|	'='EQUAL
-			{DEBUG("=EQUAL")}
 	;
 
 %%
