@@ -22,7 +22,8 @@
 %token SWITCH CASE DEFAULT
 
 %token GOTO
-%token RETURN DROP
+%token DROP PICK
+%token RETURN
 
 %token INC DEC
 
@@ -59,8 +60,6 @@ name-constant_0_1_--1_:	name-constant_0_1	|	name-constant_0_1 ',' name-constant_
 ival_0_:	/* Empty */	|	ival_1_	;
 ival_1_:	ival	|	ival ',' ival_1_	;
 
-auto_extern_0_:		/* Empty */	|	auto auto_extern_0_	|	extern auto_extern_0_	;
-
 statement_0_:	/* Empty */	|	statement statement_0_	;
 
 rvalue_0_: /* Empty */ | rvalue_1_
@@ -91,7 +90,7 @@ global_var_definition:
 	;
 
 constant:	INTEGER	|	STRING	|	CHAR	|	FLOAT	;
-ival:	NAME	|	constant	;
+ival:		NAME	|	constant	;
 
 
 /*	███████╗██╗   ██╗███╗   ██╗ ██████╗████████╗██╗ ██████╗ ███╗   ██╗
@@ -102,7 +101,7 @@ ival:	NAME	|	constant	;
 	╚═╝      ╚═════╝ ╚═╝  ╚═══╝ ╚═════╝   ╚═╝   ╚═╝ ╚═════╝ ╚═╝  ╚═══╝*/
 
 function:
-	function_definition function_declaration
+	function_definition statement
 	;
 
 function_definition:
@@ -110,13 +109,9 @@ function_definition:
 			{DEBUG("Function prototype")}
 	;
 
-function_declaration:
-		auto_extern_0_ statement	// Some weirdo can do that btw
-			{}
-	;
-
 lambda_declaration:
 		'(' name_0_ ')' scope
+			{DEBUG("Lambda_declaration")}
 	;
 
 /*	███████╗ ██████╗ ██████╗ ██████╗ ███████╗
@@ -124,14 +119,9 @@ lambda_declaration:
 	███████╗██║     ██║   ██║██████╔╝█████╗  
 	╚════██║██║     ██║   ██║██╔═══╝ ██╔══╝  
 	███████║╚██████╗╚██████╔╝██║     ███████╗
-	╚══════╝ ╚═════╝ ╚═════╝ ╚═╝     ╚══════╝*/
+	╚══════╝ ╚═════╝ ╚═════╝ ╚═╝     ╚══════╝
 
-scope:
-     	'{'	auto_extern_0_ statement_0_	'}'
-     ;
-
-
-/*	 █████╗ ██╗   ██╗████████╗ ██████╗       ███████╗██╗  ██╗████████╗██████╗ ███╗   ██╗
+	 █████╗ ██╗   ██╗████████╗ ██████╗       ███████╗██╗  ██╗████████╗██████╗ ███╗   ██╗
 	██╔══██╗██║   ██║╚══██╔══╝██╔═══██╗      ██╔════╝╚██╗██╔╝╚══██╔══╝██╔══██╗████╗  ██║
 	███████║██║   ██║   ██║   ██║   ██║█████╗█████╗   ╚███╔╝    ██║   ██████╔╝██╔██╗ ██║
 	██╔══██║██║   ██║   ██║   ██║   ██║╚════╝██╔══╝   ██╔██╗    ██║   ██╔══██╗██║╚██╗██║
@@ -148,6 +138,11 @@ extern:
 			{DEBUG("Extern declaration")}
 	;
 
+scope:
+     	'{'	statement_0_	'}'
+     ;
+
+
 
 /*	███████╗████████╗ █████╗ ████████╗███████╗███╗   ███╗███████╗███╗   ██╗████████╗
 	██╔════╝╚══██╔══╝██╔══██╗╚══██╔══╝██╔════╝████╗ ████║██╔════╝████╗  ██║╚══██╔══╝
@@ -157,13 +152,15 @@ extern:
 	╚══════╝   ╚═╝   ╚═╝  ╚═╝   ╚═╝   ╚══════╝╚═╝     ╚═╝╚══════╝╚═╝  ╚═══╝   ╚═╝   */
 
 statement:
-		label
+	 	auto statement
+	| 	extern statement
+	|	label statement
+	|	SWITCH rvalue statement
 	|	CASE constant ':' statement
 	|	DEFAULT ':' statement
 	|	IF '(' rvalue ')' statement
 	|	IF '(' rvalue ')' statement ELSE statement
 	|	WHILE '(' rvalue ')' statement
-	|	SWITCH rvalue statement
 	|	CONTINUE ';'
 	|	BREAK ';'
 	|	GOTO rvalue ';'
@@ -174,7 +171,7 @@ statement:
 	;
 
 label:
-    		 NAME ':' statement
+    		 NAME ':' 
 			{DEBUG("Label declaration")}
 	;
 
@@ -199,7 +196,7 @@ drop:
 rvalue:
 		'(' rvalue_1_ ')'
 	|	lambda_declaration
-	|	scope
+	|	PICK scope
 	|	lvalue
 	|	constant
 	|	assignment
@@ -259,7 +256,7 @@ function_call:
 
 rvalue-opp-rvalue:
 		rvalue opp_binary rvalue
-		{}
+			{}
 	;
 
 opp_binary:
@@ -303,9 +300,9 @@ opp_binary:
 			{}
 	|	FLOAT_SUB
 			{}
-	|	EQUAL
+	|	FLOAT_EQUAL
 			{}
-	|	NOT_EQUAL
+	|	FLOAT_NOT_EQUAL
 			{}
 	|	FLOAT_INF
 			{}
@@ -382,6 +379,8 @@ assign_opp:
 	|	FLOAT_ASSIGN_SUP
 			{}
 	|	FLOAT_ASSIGN_SUP_EQUAL
+			{}
+	|	'='EQUAL
 			{}
 	;
 

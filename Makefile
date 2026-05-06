@@ -12,7 +12,7 @@ INC_GEN	   =  $(YACC_C_GEN:.c=.h)
 
 RM = rm -rf
 
-YACC	=  bison -d -Wcounterexamples #-Wconflicts-rr -Wconflicts-sr
+YACC	=  bison -d -Wother #-Wcounterexamples #-Wconflicts-rr -Wconflicts-sr
 LEX	=  flex
 
 all: $(NAME)
