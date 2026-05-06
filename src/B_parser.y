@@ -349,7 +349,7 @@ assign_opp:
 	|	ASSIGN_XOR
 			{}
 	|	ASSIGN_EQUAL
-			{}
+			{DEBUG("Assign _EQUAL")}
 	|	ASSIGN_NOT_EQUAL
 			{}
 	|	ASSIGN_INF
@@ -381,7 +381,7 @@ assign_opp:
 	|	FLOAT_ASSIGN_SUP_EQUAL
 			{}
 	|	'='EQUAL
-			{}
+			{DEBUG("=EQUAL")}
 	;
 
 %%
