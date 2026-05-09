@@ -27,6 +27,8 @@
 
 %token INC DEC
 
+%token	INT_TO_FLOAT FLOAT_TO_INT
+
 %token L_SHIFT R_SHIFT MULT DIV MODULO ADD SUB OR AND EQUAL XOR NOT_EQUAL INF INF_EQUAL SUP SUP_EQUAL
 %token ASSIGN ASSIGN_L_SHIFT ASSIGN_R_SHIFT ASSIGN_MULT ASSIGN_DIV ASSIGN_MODULO ASSIGN_ADD ASSIGN_SUB ASSIGN_OR ASSIGN_AND ASSIGN_XOR ASSIGN_EQUAL ASSIGN_NOT_EQUAL ASSIGN_INF ASSIGN_INF_EQUAL ASSIGN_SUP ASSIGN_SUP_EQUAL
 
@@ -109,9 +111,21 @@ function_definition:
 			{DEBUG("Function prototype")}
 	;
 
+/*	██╗      █████╗ ███╗   ███╗██████╗ ██████╗  █████╗ 
+	██║     ██╔══██╗████╗ ████║██╔══██╗██╔══██╗██╔══██╗
+	██║     ███████║██╔████╔██║██████╔╝██║  ██║███████║
+	██║     ██╔══██║██║╚██╔╝██║██╔══██╗██║  ██║██╔══██║
+	███████╗██║  ██║██║ ╚═╝ ██║██████╔╝██████╔╝██║  ██║
+	╚══════╝╚═╝  ╚═╝╚═╝     ╚═╝╚═════╝ ╚═════╝ ╚═╝  ╚═╝*/
+
 lambda_declaration:
-		'(' name_0_ ')' scope
+		 lambda_prototype scope
 			{DEBUG("Lambda_declaration")}
+	;
+
+lambda_prototype:
+		'(' name_0_ ')'
+			{DEBUG("Lambda_proto")}
 	;
 
 /*	███████╗ ██████╗ ██████╗ ██████╗ ███████╗
