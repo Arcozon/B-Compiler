@@ -157,14 +157,12 @@ uint32_t	ft_octToInt(const char *_str) {
 	const char	*index = strchr(_baseOct, _str[0]);
 	uint32_t	res = 0;
 
-	DEBUG("'%s'", _str);
 	for (uint8_t j = 0; (index != NULL) && _str[j]; ++j) {
-		DEBUG("'%c'|%d", *index, (int)*index);
 		res *= 8;
 		res += (index - _baseOct);
 		index = strchr(_baseOct, _str[j + 1]);
 	}
-	DEBUG("\nOct: %d\n", res);
+	//DEBUG("\nOct: %d\n", res);
 	return (res);
 }
 
@@ -213,7 +211,7 @@ uint32_t	ft_charToI32(const char *_strQuote) {
 
 				index = strchr(_baseOct, *s);
 			}
-			DEBUG("\nOct: %d\n", res);
+		//	DEBUG("\nOct: %d\n", res);
 			i32[iInt32] = res;
 			continue;
 		} else {
