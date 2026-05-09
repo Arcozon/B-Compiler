@@ -78,20 +78,16 @@ rvalue_1_: rvalue | rvalue ',' rvalue_1_
 	╚═╝     ╚═╝  ╚═╝ ╚═════╝  ╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝     ╚═╝*/
 
 program:
-		 /* Empty */	{DEBUG("Found empty prog");}
 	|	definition
 
 definition:
 		global_var_definition ';'
 	|	function
-			{DEBUG("Found function");}
 	;
 
 global_var_definition:
 		NAME
-			{DEBUG("Found global def simple def");}
 	|	NAME '[' constant_0_1 ']' ival_0_
-			{DEBUG("Found global def");}
 	;
 
 constant:	INTEGER	|	STRING	|	CHAR	|	FLOAT	;
@@ -210,18 +206,15 @@ drop:
 	╚═╝  ╚═╝        ╚═══╝  ╚═╝  ╚═╝╚══════╝ ╚═════╝ ╚══════╝*/
 
 rvalue:
-		rvalue0
-			{DEBUG("R0");}
+		rvalue12
 	;
 
 rvalue0:
-		NAME
+		lvalue
 			{}
 	|	constant
 			{}
 	|	lambda_declaration
-			{}
-	|	deref_array
 			{}
 	|	function_call
 			{DEBUG("Function Call");}
@@ -229,8 +222,6 @@ rvalue0:
 			{}
 	|	PICK scope
 			{}
-	|	rvalue1
-		{DEBUG("r1");}
 	;
 
 rvalue1:
@@ -254,111 +245,111 @@ rvalue1:
 			{}
 	|	FLOAT_TO_INT rvalue1
 			{}
-	|	rvalue2
-			{DEBUG("R2");}
+	|	rvalue0
 	;
 
 rvalue2:
-		rvalue2 R_SHIFT rvalue2
+		rvalue2 R_SHIFT rvalue1
 			{}
-	|	rvalue2 L_SHIFT rvalue2
+	|	rvalue2 L_SHIFT rvalue1
+			{}
+	|	rvalue1
+	;
+
+rvalue3:
+		rvalue3 AND rvalue2
+			{}
+	|	rvalue2
+	;
+
+rvalue4:
+		rvalue4 XOR rvalue3
 			{}
 	|	rvalue3
 	;
 
-rvalue3:
-		rvalue3 AND rvalue3
+rvalue5:
+		rvalue5 OR rvalue4
 			{}
 	|	rvalue4
 	;
 
-rvalue4:
-		rvalue4 XOR rvalue4
+rvalue6:
+		rvalue6 MULT rvalue5
+			{}
+	|	rvalue6 DIV rvalue5
+			{}
+	|	rvalue6 MODULO rvalue5
+			{}
+	|	rvalue6 FLOAT_MULT rvalue5
+			{}
+	|	rvalue6 FLOAT_DIV rvalue5
 			{}
 	|	rvalue5
 	;
 
-rvalue5:
-		rvalue5 OR rvalue5
+rvalue7:
+		rvalue7 ADD rvalue6
+			{}
+	|	rvalue7 SUB rvalue6
+			{}
+	|	rvalue7 FLOAT_SUB rvalue6
+			{}
+	|	rvalue7 FLOAT_ADD rvalue6
 			{}
 	|	rvalue6
 	;
 
-rvalue6:
-		rvalue6 MULT rvalue6
+rvalue8:
+		rvalue8 EQUAL rvalue7
 			{}
-	|	rvalue6 DIV rvalue6
+	|	rvalue8 NOT_EQUAL rvalue7
 			{}
-	|	rvalue6 MODULO rvalue6
+	|	rvalue8 SUP rvalue7
 			{}
-	|	rvalue6 FLOAT_MULT rvalue6
+	|	rvalue8 INF rvalue7
 			{}
-	|	rvalue6 FLOAT_DIV rvalue6
+	|	rvalue8 SUP_EQUAL rvalue7
+			{}
+	|	rvalue8 INF_EQUAL rvalue7
+			{}
+	|	rvalue8 FLOAT_EQUAL rvalue7
+			{}
+	|	rvalue8 FLOAT_NOT_EQUAL rvalue7
+			{}
+	|	rvalue8 FLOAT_SUP rvalue7
+			{}
+	|	rvalue8 FLOAT_INF rvalue7
+			{}
+	|	rvalue8 FLOAT_SUP_EQUAL rvalue7
+			{}
+	|	rvalue8 FLOAT_INF_EQUAL rvalue7
 			{}
 	|	rvalue7
 	;
 
-rvalue7:
-		rvalue7 ADD rvalue7
-			{}
-	|	rvalue7 SUB rvalue7
-			{}
-	|	rvalue7 FLOAT_SUB rvalue7
-			{}
-	|	rvalue7 FLOAT_ADD rvalue7
+rvalue9:
+		rvalue9 LOGICAL_AND rvalue8
 			{}
 	|	rvalue8
 	;
 
-rvalue8:
-		rvalue8 EQUAL rvalue8
-			{}
-	|	rvalue8 NOT_EQUAL rvalue8
-			{}
-	|	rvalue8 SUP rvalue8
-			{}
-	|	rvalue8 INF rvalue8
-			{}
-	|	rvalue8 SUP_EQUAL rvalue8
-			{}
-	|	rvalue8 INF_EQUAL rvalue8
-			{}
-	|	rvalue8 FLOAT_EQUAL rvalue8
-			{}
-	|	rvalue8 FLOAT_NOT_EQUAL rvalue8
-			{}
-	|	rvalue8 FLOAT_SUP rvalue8
-			{}
-	|	rvalue8 FLOAT_INF rvalue8
-			{}
-	|	rvalue8 FLOAT_SUP_EQUAL rvalue8
-			{}
-	|	rvalue8 FLOAT_INF_EQUAL rvalue8
+rvalue10:
+		rvalue10 LOGICAL_OR rvalue9
 			{}
 	|	rvalue9
 	;
 
-rvalue9:
-		rvalue9 LOGICAL_AND rvalue9
+rvalue11:
+		rvalue10 '?' rvalue11 ':' rvalue11
 			{}
 	|	rvalue10
-	;
-
-rvalue10:
-		rvalue10 LOGICAL_OR rvalue10
-			{}
-	|	rvalue11
-	;
-
-rvalue11:
-		rvalue11 '?' rvalue10 ':' rvalue10
-			{}
-	|	rvalue12
 	;
 
 rvalue12:
 		assignment
 			{}
+	|	rvalue11
 	;
 
 pre-inc_dec:
@@ -377,17 +368,17 @@ post-inc_dec:
 
 lvalue:
 		NAME
-	|	MULT rvalue
+	|	MULT rvalue0
 	|	deref_array	
 	;
 
 deref_array:
-		rvalue '[' rvalue ']'
+		rvalue0 '[' rvalue ']'
 			{}
 	;
 
 function_call:
-		rvalue '(' rvalue_0_ ')'
+		rvalue0 '(' rvalue_0_ ')'
 	;
 
 
@@ -399,7 +390,7 @@ function_call:
 	╚═╝  ╚═╝╚══════╝╚══════╝╚═╝ ╚═════╝ ╚═╝  ╚═══╝╚══════╝╚═╝     ╚═╝╚══════╝╚═╝  ╚═══╝   ╚═╝   */
 
 assignment:
-	   lvalue assign_opp rvalue;
+	   lvalue assign_opp rvalue12;
 
 assign_opp:
 		ASSIGN
