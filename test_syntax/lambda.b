@@ -1,6 +1,6 @@
 main(a) {
 	(x) {
-		return x + 1;
-	}
+		return x;
+	}(x);
 	x(2);
 }

@@ -32,7 +32,7 @@
 # define IN_COMMENT				(GET_BIT(parsData.flags, E_COMMENT))
 # define RETURN_COMMENT(token)	do {									\
 									if (!IN_COMMENT) {					\
-										DEBUG(GREEN BOLD "%s" RESET" ["ITALIC BLUE"%.10s" RESET "]"RESET, #token, yytext);	\
+									/*	DEBUG(GREEN BOLD "%s" RESET" ["ITALIC BLUE"%.10s" RESET "]"RESET, #token, yytext);	*/\
 										return (token);					\
 									}									\
 								} while (0);

@@ -28,8 +28,9 @@
 %token RETURN
 
 %token INC DEC
-
 %token	INT_TO_FLOAT FLOAT_TO_INT
+
+%token LOGICAL_AND LOGICAL_OR
 
 %token L_SHIFT R_SHIFT MULT DIV MODULO ADD SUB OR AND EQUAL XOR NOT_EQUAL INF INF_EQUAL SUP SUP_EQUAL
 %token ASSIGN ASSIGN_L_SHIFT ASSIGN_R_SHIFT ASSIGN_MULT ASSIGN_DIV ASSIGN_MODULO ASSIGN_ADD ASSIGN_SUB ASSIGN_OR ASSIGN_AND ASSIGN_XOR ASSIGN_EQUAL ASSIGN_NOT_EQUAL ASSIGN_INF ASSIGN_INF_EQUAL ASSIGN_SUP ASSIGN_SUP_EQUAL
@@ -95,7 +96,6 @@ global_var_definition:
 
 constant:	INTEGER	|	STRING	|	CHAR	|	FLOAT	;
 ival:		NAME	|	constant	;
-
 
 /*	███████╗██╗   ██╗███╗   ██╗ ██████╗████████╗██╗ ██████╗ ███╗   ██╗
 	██╔════╝██║   ██║████╗  ██║██╔════╝╚══██╔══╝██║██╔═══██╗████╗  ██║
@@ -210,19 +210,155 @@ drop:
 	╚═╝  ╚═╝        ╚═══╝  ╚═╝  ╚═╝╚══════╝ ╚═════╝ ╚══════╝*/
 
 rvalue:
-		'(' rvalue_1_ ')'
-	|	lambda_declaration
-	|	PICK scope
-	|	lvalue
+		rvalue0
+			{DEBUG("R0");}
+	;
+
+rvalue0:
+		NAME
+			{}
 	|	constant
-	|	assignment
-	|	pre-inc_dec
-	|	post-inc_dec
-	|	unary-rvalue
-	|	AND lvalue
-	|	rvalue-opp-rvalue
-	|	ternary
+			{}
+	|	lambda_declaration
+			{}
+	|	deref_array
+			{}
 	|	function_call
+			{DEBUG("Function Call");}
+	|	'(' rvalue ')'
+			{}
+	|	PICK scope
+			{}
+	|	rvalue1
+		{DEBUG("r1");}
+	;
+
+rvalue1:
+		pre-inc_dec
+			{}
+	|	post-inc_dec
+			{}
+	|	MULT rvalue1
+			{}
+	|	AND rvalue1
+			{}
+	|	SUB rvalue1
+		 	{}
+	|	NOT rvalue1
+			{}
+	|	TILDE rvalue1
+			{}
+	|	FLOAT_SUB rvalue1
+			{}
+	|	INT_TO_FLOAT rvalue1
+			{}
+	|	FLOAT_TO_INT rvalue1
+			{}
+	|	rvalue2
+			{DEBUG("R2");}
+	;
+
+rvalue2:
+		rvalue2 R_SHIFT rvalue2
+			{}
+	|	rvalue2 L_SHIFT rvalue2
+			{}
+	|	rvalue3
+	;
+
+rvalue3:
+		rvalue3 AND rvalue3
+			{}
+	|	rvalue4
+	;
+
+rvalue4:
+		rvalue4 XOR rvalue4
+			{}
+	|	rvalue5
+	;
+
+rvalue5:
+		rvalue5 OR rvalue5
+			{}
+	|	rvalue6
+	;
+
+rvalue6:
+		rvalue6 MULT rvalue6
+			{}
+	|	rvalue6 DIV rvalue6
+			{}
+	|	rvalue6 MODULO rvalue6
+			{}
+	|	rvalue6 FLOAT_MULT rvalue6
+			{}
+	|	rvalue6 FLOAT_DIV rvalue6
+			{}
+	|	rvalue7
+	;
+
+rvalue7:
+		rvalue7 ADD rvalue7
+			{}
+	|	rvalue7 SUB rvalue7
+			{}
+	|	rvalue7 FLOAT_SUB rvalue7
+			{}
+	|	rvalue7 FLOAT_ADD rvalue7
+			{}
+	|	rvalue8
+	;
+
+rvalue8:
+		rvalue8 EQUAL rvalue8
+			{}
+	|	rvalue8 NOT_EQUAL rvalue8
+			{}
+	|	rvalue8 SUP rvalue8
+			{}
+	|	rvalue8 INF rvalue8
+			{}
+	|	rvalue8 SUP_EQUAL rvalue8
+			{}
+	|	rvalue8 INF_EQUAL rvalue8
+			{}
+	|	rvalue8 FLOAT_EQUAL rvalue8
+			{}
+	|	rvalue8 FLOAT_NOT_EQUAL rvalue8
+			{}
+	|	rvalue8 FLOAT_SUP rvalue8
+			{}
+	|	rvalue8 FLOAT_INF rvalue8
+			{}
+	|	rvalue8 FLOAT_SUP_EQUAL rvalue8
+			{}
+	|	rvalue8 FLOAT_INF_EQUAL rvalue8
+			{}
+	|	rvalue9
+	;
+
+rvalue9:
+		rvalue9 LOGICAL_AND rvalue9
+			{}
+	|	rvalue10
+	;
+
+rvalue10:
+		rvalue10 LOGICAL_OR rvalue10
+			{}
+	|	rvalue11
+	;
+
+rvalue11:
+		rvalue11 '?' rvalue10 ':' rvalue10
+			{}
+	|	rvalue12
+	;
+
+rvalue12:
+		assignment
+			{}
 	;
 
 pre-inc_dec:
@@ -239,95 +375,19 @@ post-inc_dec:
 	|	lvalue FLOAT_DEC
 	;
 
-unary-rvalue:
-		ADD rvalue
-	|	SUB rvalue
-	|	FLOAT_ADD rvalue
-	|	FLOAT_SUB rvalue
-	|	NOT rvalue
-	|	TILDE rvalue
-	;
-
-ternary:
-	rvalue '?' rvalue ':' rvalue
-	;
-
 lvalue:
 		NAME
 	|	MULT rvalue
-	|	rvalue '[' rvalue ']'
+	|	deref_array	
+	;
+
+deref_array:
+		rvalue '[' rvalue ']'
+			{}
 	;
 
 function_call:
-	rvalue '(' rvalue_0_ ')'
-	;
-
-
-/*	██████╗ ██╗   ██╗ █████╗ ██╗       ██████╗ ██████╗ ██████╗       ██████╗ ██╗   ██╗ █████╗ ██╗     
-	██╔══██╗██║   ██║██╔══██╗██║      ██╔═══██╗██╔══██╗██╔══██╗      ██╔══██╗██║   ██║██╔══██╗██║     
-	██████╔╝██║   ██║███████║██║█████╗██║   ██║██████╔╝██████╔╝█████╗██████╔╝██║   ██║███████║██║     
-	██╔══██╗╚██╗ ██╔╝██╔══██║██║╚════╝██║   ██║██╔═══╝ ██╔═══╝ ╚════╝██╔══██╗╚██╗ ██╔╝██╔══██║██║     
-	██║  ██║ ╚████╔╝ ██║  ██║███████╗ ╚██████╔╝██║     ██║           ██║  ██║ ╚████╔╝ ██║  ██║███████╗
-	╚═╝  ╚═╝  ╚═══╝  ╚═╝  ╚═╝╚══════╝  ╚═════╝ ╚═╝     ╚═╝           ╚═╝  ╚═╝  ╚═══╝  ╚═╝  ╚═╝╚══════╝*/
-
-rvalue-opp-rvalue:
-		rvalue opp_binary rvalue
-			{}
-	;
-
-opp_binary:
-		L_SHIFT
-			{}
-	|	R_SHIFT
-			{}
-	|	MULT
-			{}
-	|	DIV
-			{}
-	|	MODULO
-			{}
-	|	ADD
-			{}
-	|	SUB
-			{}
-	|	OR
-			{}
-	|	AND
-			{}
-	|	XOR
-			{}
-	|	EQUAL
-			{}
-	|	NOT_EQUAL
-			{}
-	|	INF
-			{}
-	|	INF_EQUAL
-			{}
-	|	SUP
-			{}
-	|	SUP_EQUAL
-			{}
-	|	FLOAT_MULT
-			{}
-	|	FLOAT_DIV
-			{}
-	|	FLOAT_ADD
-			{}
-	|	FLOAT_SUB
-			{}
-	|	FLOAT_EQUAL
-			{}
-	|	FLOAT_NOT_EQUAL
-			{}
-	|	FLOAT_INF
-			{}
-	|	FLOAT_INF_EQUAL
-			{}
-	|	FLOAT_SUP
-			{}
-	|	FLOAT_SUP_EQUAL
-			{}
+		rvalue '(' rvalue_0_ ')'
 	;
 
 
@@ -365,7 +425,7 @@ assign_opp:
 	|	ASSIGN_XOR
 			{}
 	|	ASSIGN_EQUAL
-			{DEBUG("Assign _EQUAL")}
+			{}
 	|	ASSIGN_NOT_EQUAL
 			{}
 	|	ASSIGN_INF
