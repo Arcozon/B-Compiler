@@ -1,0 +1,12 @@
+#!/usr/bin/bash
+if [ "$#" -eq 0 ]; then
+	DIR_B="test_syntax/"
+	for file in "$DIR_B"*; do
+		./B <$file 
+	done
+else
+	for arg in $@; do
+		./B <$arg
+	done
+fi
+
