@@ -10,6 +10,8 @@
 
 %start program
 
+%token ERROR
+
 %token INTEGER STRING CHAR FLOAT
 %token NAME
 

@@ -1,9 +1,10 @@
-%
+%{
 	#include <ctype.h>
 	#include "B_parser.h"
 	#include "bCompiler.h"
 
 	uint32_t	ft_charToI32(const char *str);
+	uint32_t	ft_octToInt(const char *str);
 %}
 
 %%
@@ -103,10 +104,10 @@
 [A-Za-z_][A-Za-z0-9_]*		{ yylval.sval = strdup(yytext);		RETURN_COMMENT(NAME);}
 
 0b[0-1]+		{	yylval.ival = strtol(yytext + 2, NULL, 2);	RETURN_COMMENT(INTEGER);}
-0[0-9]+			{	yylval.ival = strtol(yytext + 1, NULL, 8);	RETURN_COMMENT(INTEGER);}	// Mdr 09 c est 011 les enculer trkl a pars en fait, comme b10 mais * 8 au lieu de * 10
-0x[0-9a-fA-F]+	{	yylval.ival = strtol(yytext + 2, NULL, 16);	RETURN_COMMENT(INTEGER);}
+0[0-9]+			{	yylval.ival = ft_octToInt(yytext+ 1);		RETURN_COMMENT(INTEGER);}	// Mdr 09 c est 011 les enculer trkl a pars en fait, comme b10 mais * 8 au lieu de * 10
+0x[0-9a-fA-F]+		{	yylval.ival = strtol(yytext + 2, NULL, 16);	RETURN_COMMENT(INTEGER);}
 [0-9]+			{	yylval.ival = strtol(yytext, NULL, 10);		RETURN_COMMENT(INTEGER);}
-[0-9]+\.[0-9]+?	{	yylval.fval = strtod(yytext, NULL);			RETURN_COMMENT(FLOAT);} // 3.   1.e6   5.982e-4
+[0-9]+\.[0-9]+?		{	yylval.fval = strtod(yytext, NULL);		RETURN_COMMENT(FLOAT);} // 3.   1.e6   5.982e-4
 
 ";" 	{RETURN_COMMENT(';');}
 "," 	{RETURN_COMMENT(',');}
@@ -126,6 +127,7 @@
 
 \"(\\([abetnvfr\\'\"?]{1}|[0-7]{1,3}|x[0-9a-fA-F]{1,2})|[^\\\"])*\"	{
 	RETURN_COMMENT(STRING);
+	// TODO: Pars sring
 }
 
 \/\*	{	 // Multi line Comment Start
@@ -146,19 +148,23 @@
 
 [ \n\t]	{}
 
+.	{RETURN_COMMENT(ERROR);}
+
 %%
 
 uint32_t	ft_octToInt(const char *_str) {
 	static const char	_baseOct[] = "0123456789"; 
-	const char	*index = strchr(_baseOct, s[0]);
+	const char	*index = strchr(_baseOct, _str[0]);
 	uint32_t	res = 0;
 
-	for (uint8_t j = 0; (index != NULL); ++j) {
+	DEBUG("'%s'", _str);
+	for (uint8_t j = 0; (index != NULL) && _str[j]; ++j) {
+		DEBUG("'%c'|%d", *index, (int)*index);
 		res *= 8;
 		res += (index - _baseOct);
-		index = strchr(_baseOct, s[j]);
+		index = strchr(_baseOct, _str[j + 1]);
 	}
-
+	DEBUG("\nOct: %d\n", res);
 	return (res);
 }
 
@@ -207,6 +213,7 @@ uint32_t	ft_charToI32(const char *_strQuote) {
 
 				index = strchr(_baseOct, *s);
 			}
+			DEBUG("\nOct: %d\n", res);
 			i32[iInt32] = res;
 			continue;
 		} else {
@@ -238,7 +245,7 @@ uint32_t	ft_charToI32(const char *_strQuote) {
 		res <<= 8;
 		res |= i32[i];
 	}
-	DEBUG("%u", res);
+//	DEBUG("%u", res);
 	return (res);
 }
 
