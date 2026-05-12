@@ -3,7 +3,7 @@
 %}
 
 %union {
-	int		ival;
+	int	ival;
 	float	fval;
 	char	*sval;
 }
@@ -67,6 +67,7 @@ ival_1_:	ival	|	ival ',' ival_1_	;
 
 statement_0_:	/* Empty */	|	statement statement_0_	;
 
+rvalue_0_1: /* Empty */ | rvalue
 rvalue_0_: /* Empty */ | rvalue_1_
 rvalue_1_: rvalue | rvalue ',' rvalue_1_
 
@@ -78,7 +79,7 @@ rvalue_1_: rvalue | rvalue ',' rvalue_1_
 	╚═╝     ╚═╝  ╚═╝ ╚═════╝  ╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝     ╚═╝*/
 
 program:
-	|	definition
+	|	definition program
 
 definition:
 		global_var_definition ';'
@@ -87,6 +88,9 @@ definition:
 
 global_var_definition:
 		NAME
+		{
+			printf("%s\n", yylval.sval);
+		}
 	|	NAME '[' constant_0_1 ']' ival_0_
 	;
 
@@ -141,12 +145,12 @@ lambda_prototype:
 	╚═╝  ╚═╝ ╚═════╝    ╚═╝    ╚═════╝       ╚══════╝╚═╝  ╚═╝   ╚═╝   ╚═╝  ╚═╝╚═╝  ╚═══╝*/
 
 auto:
-		AUTO name-constant_0_1_--1_ ';'
+		AUTO name-constant_0_1_--1_
 			{DEBUG("Auto declaration")}
 	;
 
 extern:
-		EXTERN name_1_ ';'
+		EXTERN name_1_
 			{DEBUG("Extern declaration")}
 	;
 
@@ -164,8 +168,8 @@ scope:
 	╚══════╝   ╚═╝   ╚═╝  ╚═╝   ╚═╝   ╚══════╝╚═╝     ╚═╝╚══════╝╚═╝  ╚═══╝   ╚═╝   */
 
 statement:
-	 	auto statement
-	| 	extern statement
+	 	auto ';' statement
+	| 	extern ';' statement
 	|	label statement
 	|	SWITCH rvalue statement
 	|	CASE constant ':' statement
@@ -179,7 +183,7 @@ statement:
 	|	return ';'
 	|	drop ';'
 	|	scope
-	|	rvalue_0_ ';'
+	|	rvalue_0_1 ';'
 	;
 
 label:
@@ -229,9 +233,9 @@ rvalue1:
 			{}
 	|	post-inc_dec
 			{}
-	|	MULT rvalue1
+	|	AND lvalue
 			{}
-	|	AND rvalue1
+	|	MULT rvalue1
 			{}
 	|	SUB rvalue1
 		 	{}
