@@ -1,11 +1,18 @@
 %{
+	#include "type.h"
+
+
 	#include "bCompiler.h"
 %}
 
 %union {
-	int	ival;
-	float	fval;
-	char	*sval;
+	int	intval;
+	float	floatval;
+	char	*strval;
+	struct {
+		char		**sstr;
+		uint64_t	len;
+	}	sstrval;
 }
 
 %start program
@@ -27,7 +34,7 @@
 %token DROP PICK
 %token RETURN
 
-%token INC DEC
+%token	INC DEC
 %token	INT_TO_FLOAT FLOAT_TO_INT
 
 %token LOGICAL_AND LOGICAL_OR
@@ -44,6 +51,8 @@
 
 %left INC SUB FLOAT_INC FLOAT_SUB
 
+%type <strval> name
+
 %%
 
 
@@ -54,12 +63,18 @@
 	███████╗██║███████║   ██║   
 	╚══════╝╚═╝╚══════╝   ╚═╝   */
 
+name:	NAME	{
+    $$ = yylval.strval;
+    DEBUG("Name: [%s]", yylval.strval);
+}
+	;
+
 name_0_:	/* Empty */	|	name_1_	;
-name_1_:	NAME	|	NAME ',' name_1_	;
+name_1_:	name	|	NAME ',' name_1_	;
 
 constant_0_1:	/* Empty */	|	constant	;
 
-name-constant_0_1:	NAME constant_0_1	;
+name-constant_0_1:	name constant_0_1	;
 name-constant_0_1_--1_:	name-constant_0_1	|	name-constant_0_1 ',' name-constant_0_1_--1_	;
 
 ival_0_:	/* Empty */	|	ival_1_	;
@@ -87,15 +102,15 @@ definition:
 	;
 
 global_var_definition:
-		NAME
+		name
 		{
-			printf("%s\n", yylval.sval);
+			writeBss($1);	
 		}
-	|	NAME '[' constant_0_1 ']' ival_0_
+	|	name '[' constant_0_1 ']' ival_0_
 	;
 
 constant:	INTEGER	|	STRING	|	CHAR	|	FLOAT	;
-ival:		NAME	|	constant	;
+ival:		name	|	constant	;
 
 /*	███████╗██╗   ██╗███╗   ██╗ ██████╗████████╗██╗ ██████╗ ███╗   ██╗
 	██╔════╝██║   ██║████╗  ██║██╔════╝╚══██╔══╝██║██╔═══██╗████╗  ██║
@@ -109,8 +124,10 @@ function:
 	;
 
 function_definition:
-		NAME '(' name_0_ ')'
-			{DEBUG("Function prototype")}
+		name '(' name_0_ ')'
+		{
+			printf("Function : %s\n", $1);
+		}
 	;
 
 /*	██╗      █████╗ ███╗   ███╗██████╗ ██████╗  █████╗ 
@@ -187,7 +204,7 @@ statement:
 	;
 
 label:
-    		 NAME ':' 
+    		 name ':' 
 			{DEBUG("Label declaration")}
 	;
 
@@ -371,7 +388,7 @@ post-inc_dec:
 	;
 
 lvalue:
-		NAME
+		name
 	|	MULT rvalue0
 	|	deref_array	
 	;
@@ -459,9 +476,52 @@ void	yyerror (char const s[]) {
 	fprintf (stderr, "%s\n", s);
 }
 
+void	_annonceSection(void) {
+	const e_section sct = parsData.section;
+	static const char *sctStr[] = {"text", "data", "bss"};
 
-data_t	parsData;
+	if (sct == SCT_NONE || sct > SCT_MAX) {
+		exit(255);
+	}
+	printf("section .%s\n", sctStr[sct - SCT_TEXT]);
+}
+
+//__attribute__((format(printf(2, 3))))
+static inline void	_writeToSection(const e_section _nSection, const char _format[], va_list vp) {
+	if (_nSection != parsData.section) {
+		parsData.section = _nSection;
+		_annonceSection();
+	}
+	vprintf(_format, vp);
+}
+
+__attribute__((format(printf, 1, 2)))
+void	writeText(const char _format[], ...) {
+	va_list	 vp;
+	va_start(vp, _format);
+	_writeToSection(SCT_TEXT, _format, vp);
+	va_end(vp);
+}
+
+__attribute__((format(printf, 1, 2)))
+void	writeData(const char _format[], ...) {
+	va_list	 vp;
+	va_start(vp, _format);
+	_writeToSection(SCT_TEXT, _format, vp);
+	va_end(vp);
+}
+
+__attribute__((format(printf, 1, 2)))
+void	writeBss(const char _format[], ...) {
+	va_list	 vp;
+	va_start(vp, _format);
+	_writeToSection(SCT_TEXT, _format, vp);
+	va_end(vp);
+}
+
+data_t	parsData =  {0, SCT_NONE};
 
 int main(void) {
+	printf(".intel_syntax noprefix\n");
 	yyparse();
 }

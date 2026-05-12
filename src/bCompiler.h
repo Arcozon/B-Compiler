@@ -15,9 +15,10 @@
 
 # include <stdio.h>
 # include <stdlib.h>
-# include <stdint.h>
+# include <stdarg.h>
 
 # include "binaryOperation.h"
+# include "type.h"
 
 # define BOLD	"\e[1m"
 # define ITALIC	"\e[13m"
@@ -40,9 +41,7 @@
 # define DEBUG(str, ...)	{ fprintf(stderr, str, ##__VA_ARGS__); fprintf(stderr, "\n"); }
 
 
-
 // typedef struct {
-// 	char		fName[];
 //	// Var locales
 //	// Var extern
 //	// Labels
@@ -53,6 +52,13 @@
 enum {
 	E_COMMENT,
 };
+typedef enum {
+	SCT_NONE,
+	SCT_TEXT,
+	SCT_DATA,
+	SCT_BSS,
+	SCT_MAX = SCT_BSS
+}	e_section;
 
 typedef struct {
 	// fnc
@@ -61,12 +67,16 @@ typedef struct {
 	// stack ?
 	// locals ?
 	uint64_t	flags;
+	e_section	section;
 }	data_t;
 
 extern data_t	parsData;
 
 void	yyerror(const char s[]);
-int		yylex(void);
+int	yylex(void);
 
+void	writeText(const char _format[], ...)	__attribute__((format(printf, 1, 2)));
+void	writeData(const char _format[], ...)	__attribute__((format(printf, 1, 2)));
+void	writeBss(const char _format[], ...)	__attribute__((format(printf, 1, 2)));
 
 #endif

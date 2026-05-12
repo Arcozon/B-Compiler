@@ -50,7 +50,7 @@
 "/"		{RETURN_COMMENT(DIV);}
 "%"		{RETURN_COMMENT(MODULO);}
 "+"		{RETURN_COMMENT(ADD);}
-"-"		{RETURN_COMMENT(SUB);}
+"-"		{RETURN_COMMENT(SUB);} 
 "|"		{RETURN_COMMENT(OR);}
 "&"		{RETURN_COMMENT(AND);}
 "^"		{RETURN_COMMENT(XOR);}
@@ -104,13 +104,13 @@
 "=#>"		{RETURN_COMMENT(FLOAT_ASSIGN_SUP);}
 "=#>="		{RETURN_COMMENT(FLOAT_ASSIGN_SUP_EQUAL);}
 
-[A-Za-z_][A-Za-z0-9_]*		{ yylval.sval = strdup(yytext);		RETURN_COMMENT(NAME);}
+[A-Za-z_][A-Za-z0-9_]*		{ yylval.strval = strdup(yytext);		RETURN_COMMENT(NAME);}
 
-0b[0-1]+		{	yylval.ival = strtol(yytext + 2, NULL, 2);	RETURN_COMMENT(INTEGER);}
-0[0-9]+			{	yylval.ival = ft_octToInt(yytext+ 1);		RETURN_COMMENT(INTEGER);}	// Mdr 09 c est 011 les enculer trkl a pars en fait, comme b10 mais * 8 au lieu de * 10
-0x[0-9a-fA-F]+		{	yylval.ival = strtol(yytext + 2, NULL, 16);	RETURN_COMMENT(INTEGER);}
-[0-9]+			{	yylval.ival = strtol(yytext, NULL, 10);		RETURN_COMMENT(INTEGER);}
-[0-9]+\.[0-9]+?		{	yylval.fval = strtod(yytext, NULL);		RETURN_COMMENT(FLOAT);} // 3.   1.e6   5.982e-4
+0b[0-1]+		{	yylval.intval = strtol(yytext + 2, NULL, 2);	RETURN_COMMENT(INTEGER);}
+0[0-9]+			{	yylval.intval = ft_octToInt(yytext+ 1);		RETURN_COMMENT(INTEGER);}	// Mdr 09 c est 011 les enculer trkl a pars en fait, comme b10 mais * 8 au lieu de * 10
+0x[0-9a-fA-F]+		{	yylval.intval = strtol(yytext + 2, NULL, 16);	RETURN_COMMENT(INTEGER);}
+[0-9]+			{	yylval.intval = strtol(yytext, NULL, 10);		RETURN_COMMENT(INTEGER);}
+[0-9]+\.[0-9]+?		{	yylval.floatval = strtod(yytext, NULL);		RETURN_COMMENT(FLOAT);} // 3.   1.e6   5.982e-4
 
 ";" 	{RETURN_COMMENT(';');}
 "," 	{RETURN_COMMENT(',');}
@@ -124,7 +124,7 @@
 ")" 	{RETURN_COMMENT(')');}
 
 '(\\([abetnvfr\\'"?]{1}|[0-7]{1,3}|x[0-9a-fA-F]{1,2})|[^\\']){1,4}'	 {	// Char
-	yylval.ival = ft_charToI32(yytext);
+	yylval.intval = ft_charToI32(yytext);
 	RETURN_COMMENT(INTEGER);
 }
 

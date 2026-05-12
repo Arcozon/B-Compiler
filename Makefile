@@ -39,4 +39,7 @@ re:	fclean
 	@clear
 	@$(MAKE) --no-print-directory all
 
+asm:
+	gcc -c -m32 -x assembler test.s
+
 .PHONY:	re fclean all clean
