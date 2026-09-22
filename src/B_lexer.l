@@ -10,7 +10,7 @@
 %%
 
 "auto"		{RETURN_COMMENT(AUTO);}
-"extrn"	{RETURN_COMMENT(EXTERN);}
+"extrn"		{RETURN_COMMENT(EXTERN);}
 
 "goto"		{RETURN_COMMENT(GOTO);}
 

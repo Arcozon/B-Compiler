@@ -1,33 +1,47 @@
 NAME = B
 
+YACC_Y	 =  B_parser.y
+LEX_L	 =  B_lexer.l
+
+S_SRC	 =  lex_constant.c
+S_YACC	 =  $(addprefix $(D_SRC), $(YACC_Y:.y=.c))
+S_LEX	 =  $(addprefix $(D_SRC), $(LEX_L:.l=.c))
 D_SRC	 =  src/
-YACC_SRC =  B_parser.y
-LEX_SRC	 =  B_lexer.l
+SRC		 =  $(addprefix $(D_SRC), $(S_SRC))  $(S_YACC)  $(S_LEX)
 
-D_GEN	   =  gen/
-YACC_C_GEN =  $(D_GEN)$(YACC_SRC:.y=.c)
-LEX_C_GEN  =  $(D_GEN)$(LEX_SRC:.l=.c)
-INC_GEN	   =  $(YACC_C_GEN:.c=.h) 
+OBJ		 =  $(patsubst $(D_SRC)%.c, $(D_OBJ)%.o, $(SRC))
+D_OBJ	 =  .build/
 
+INC_GEN	 =  $(S_YACC:.c=.h)
+D_INC	 =  inc/
 
 RM = rm -rf
 
 YACC	=  bison -d #-Wother -Wconflicts-rr -Wconflicts-sr -Wcounterexamples 
 LEX	=  flex
 
+CC	   = cc
+CFLAGS = -Wall -Wextra -Werror -Wno-unused-function
+IFLAGS = $(addprefix -I, $(D_INC) $(D_SRC))
+
+# print:
+# 	@echo $(OBJ)
+
 all: $(NAME)
 #	./$(NAME)
 
-$(NAME):	$(YACC_C_GEN)	$(LEX_C_GEN)
-	cc $^ -I$(D_GEN) -I$(D_SRC) -o $@
+$(NAME):	$(OBJ)
+	$(CC) $(CFLAGS) $^ -o$@
 
-$(YACC_C_GEN): $(D_SRC)$(YACC_SRC)
-	@mkdir -p $(@D)
-	 $(YACC) -o$@ -- $<
+$(S_YACC): $(D_SRC)$(YACC_Y)
+	$(YACC) -o$@ -- $<
 
-$(LEX_C_GEN): $(D_SRC)$(LEX_SRC) $(INC_GEN)
-	@mkdir -p $(@D)
+$(S_LEC): $(D_SRC)$(S_LEX) $(INC_GEN)
 	$(LEX) -o$@ $<
+
+$(OBJ):	$(D_OBJ)%.o:	$(D_SRC)%.c
+	@mkdir -p $(@D)
+	$(CC) $(CFLAGS) $(IFLAGS) -c $< -o$@
 
 clean:
 	$(RM) $(D_GEN)
@@ -38,8 +52,5 @@ fclean:	clean
 re:	fclean
 	@clear
 	@$(MAKE) --no-print-directory all
-
-asm:
-	gcc -c -m32 -x assembler test.s
 
 .PHONY:	re fclean all clean

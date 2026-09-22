@@ -1,6 +1,9 @@
-gen/
-ybc/
 B
 test.o
 a.out
 test
+ressources/
+.build/
+src/B_lexer.c
+src/B_parser.c
+src/B_parser.h
