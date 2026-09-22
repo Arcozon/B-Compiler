@@ -1,0 +1,19 @@
+src/B_parser.y: warning: shift/reduce conflict on token '(' [-Wcounterexamples]
+  Example: MULT rvalue0 • '(' ')'
+  Shift derivation
+    rvalue0
+    ↳ 66: lvalue
+          ↳ 131: lvalue1
+                 ↳ 134: MULT rvalue1
+                             ↳ 81: rvalue0
+                                   ↳ 69: function_call
+                                         ↳ 137: rvalue0 • '(' rvalue_0_ ')'
+                                                              ↳ 137: ε
+  Reduce derivation
+    rvalue0
+    ↳ 69: function_call
+          ↳ 137: rvalue0                                  '(' rvalue_0_ ')'
+                 ↳ 66: lvalue                                 ↳ 137: ε
+                       ↳ 131: lvalue1
+                              ↳ 134: MULT rvalue1
+                                          ↳ 81: rvalue0 •

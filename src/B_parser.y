@@ -1,7 +1,4 @@
 %{
-	#include "type.h"
-
-
 	#include "bCompiler.h"
 %}
 
@@ -47,7 +44,7 @@
 %token FLOAT_ASSIGN_MULT FLOAT_ASSIGN_DIV FLOAT_ASSIGN_ADD FLOAT_ASSIGN_SUB FLOAT_ASSIGN_EQUAL FLOAT_ASSIGN_NOT_EQUAL FLOAT_ASSIGN_INF FLOAT_ASSIGN_INF_EQUAL FLOAT_ASSIGN_SUP FLOAT_ASSIGN_SUP_EQUAL %token NOT TILDE
 
 %token MULTI_LINE_CMT_END
-%token UNKNOWN
+/* %token UNKNOWN */
 
 %left INC SUB FLOAT_INC FLOAT_SUB
 
@@ -94,6 +91,7 @@ rvalue_1_: rvalue | rvalue ',' rvalue_1_
 	╚═╝     ╚═╝  ╚═╝ ╚═════╝  ╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝     ╚═╝*/
 
 program:
+		{} // Nothing
 	|	definition program
 
 definition:
@@ -138,13 +136,10 @@ function_definition:
 	╚══════╝╚═╝  ╚═╝╚═╝     ╚═╝╚═════╝ ╚═════╝ ╚═╝  ╚═╝*/
 
 lambda_declaration:
-		 lambda_prototype scope
-			{DEBUG("Lambda_declaration")}
-	;
-
-lambda_prototype:
 		'(' name_0_ ')'
 			{DEBUG("Lambda_proto")}
+		scope
+			{DEBUG("Lambda_declaration")}
 	;
 
 /*	███████╗ ██████╗ ██████╗ ██████╗ ███████╗
@@ -184,15 +179,17 @@ scope:
 	███████║   ██║   ██║  ██║   ██║   ███████╗██║ ╚═╝ ██║███████╗██║ ╚████║   ██║   
 	╚══════╝   ╚═╝   ╚═╝  ╚═╝   ╚═╝   ╚══════╝╚═╝     ╚═╝╚══════╝╚═╝  ╚═══╝   ╚═╝   */
 
+/* simple_statement:	// Maybe ass simple statement si if are simpler to implement
+	; */
+
 statement:
 	 	auto ';' statement
 	| 	extern ';' statement
 	|	label statement
-	|	SWITCH rvalue statement
+	|	switch_statement
 	|	CASE constant ':' statement
 	|	DEFAULT ':' statement
-	|	IF '(' rvalue ')' statement
-	|	IF '(' rvalue ')' statement ELSE statement
+	|	if_statement
 	|	WHILE '(' rvalue ')' statement
 	|	CONTINUE ';'
 	|	BREAK ';'
@@ -201,6 +198,15 @@ statement:
 	|	drop ';'
 	|	scope
 	|	rvalue_0_1 ';'
+	;
+
+if_statement:
+		IF '(' rvalue ')' statement
+	|	IF '(' rvalue ')' statement ELSE statement
+	;
+
+switch_statement:
+	SWITCH '(' rvalue  ')' '{'statement_0_ '}'
 	;
 
 label:
@@ -239,7 +245,7 @@ rvalue0:
 			{}
 	|	function_call
 			{DEBUG("Function Call");}
-	|	'(' rvalue ')'
+	|	'(' rvalue_1_ ')'
 			{}
 	|	PICK scope
 			{}
@@ -251,8 +257,6 @@ rvalue1:
 	|	post-inc_dec
 			{}
 	|	AND lvalue
-			{}
-	|	MULT rvalue1
 			{}
 	|	SUB rvalue1
 		 	{}
@@ -388,9 +392,17 @@ post-inc_dec:
 	;
 
 lvalue:
+		lvalue1
+	;
+
+lvalue0:
 		name
-	|	MULT rvalue0
 	|	deref_array	
+	;
+
+lvalue1:
+		MULT rvalue1
+	|	lvalue0	
 	;
 
 deref_array:
@@ -476,9 +488,7 @@ void	yyerror (char const s[]) {
 	fprintf (stderr, "%s\n", s);
 }
 
-
-
-data_t	parsData =  {0, SCT_NONE};
+data_t	parsData =  {0};
 
 int main(void) {
 	printf(".intel_syntax noprefix\n");

@@ -15,7 +15,8 @@
 
 # include <stdio.h>
 # include <stdlib.h>
-# include <stdarg.h>
+# include <ctype.h>
+# include <string.h>
 
 # include "binaryOperation.h"
 # include "type.h"
@@ -52,7 +53,8 @@
 enum {
 	E_COMMENT,
 };
-typedef enum {
+
+typedef enum {	// Actuall section
 	SCT_NONE,
 	SCT_TEXT,
 	SCT_DATA,
@@ -67,13 +69,16 @@ typedef struct {
 	// stack ?
 	// locals ?
 	uint64_t	flags;
-	e_section	section;
 }	data_t;
 
 extern data_t	parsData;
 
 void	yyerror(const char s[]);
-int	yylex(void);
+int		yylex(void);
+
+
+uint32_t	lex_charToI32(const char *str);
+uint32_t	lex_octToInt(const char *str);
 
 void	writeText(const char _format[], ...)	__attribute__((format(printf, 1, 2)));
 void	writeData(const char _format[], ...)	__attribute__((format(printf, 1, 2)));

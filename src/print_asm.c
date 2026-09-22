@@ -1,21 +1,23 @@
+#include <stdarg.h>
 #include "bCompiler.h"
 
-void	_annonceSection(void) {
-	const e_section sct = parsData.section;
+static e_section	currSection = SCT_NONE;
+
+static inline
+void	_annonceSection(const e_section nSection) {
 	static const char *sctStr[] = {"text", "data", "bss"};
 
-	if (sct == SCT_NONE || sct > SCT_MAX) {
+	if (nSection == SCT_NONE || nSection > SCT_MAX) {
 		exit(255);
+	} 
+	else if (nSection != currSection) {
+		currSection = nSection;
+		printf("section .%s\n", sctStr[nSection - SCT_TEXT]);
 	}
-	printf("section .%s\n", sctStr[sct - SCT_TEXT]);
 }
 
-//__attribute__((format(printf(2, 3))))
 static inline void	_writeToSection(const e_section _nSection, const char _format[], va_list vp) {
-	if (_nSection != parsData.section) {
-		parsData.section = _nSection;
-		_annonceSection();
-	}
+	_annonceSection(_nSection);
 	vprintf(_format, vp);
 }
 
@@ -31,7 +33,7 @@ __attribute__((format(printf, 1, 2)))
 void	writeData(const char _format[], ...) {
 	va_list	 vp;
 	va_start(vp, _format);
-	_writeToSection(SCT_TEXT, _format, vp);
+	_writeToSection(SCT_DATA, _format, vp);
 	va_end(vp);
 }
 
@@ -39,6 +41,6 @@ __attribute__((format(printf, 1, 2)))
 void	writeBss(const char _format[], ...) {
 	va_list	 vp;
 	va_start(vp, _format);
-	_writeToSection(SCT_TEXT, _format, vp);
+	_writeToSection(SCT_BSS, _format, vp);
 	va_end(vp);
 }
