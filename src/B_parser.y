@@ -56,10 +56,12 @@
 // comparaison cannot be chained
 %nonassoc EQUAL NOT_EQUAL INF INF_EQUAL SUP SUP_EQUAL FLOAT_EQUAL FLOAT_NOT_EQUAL FLOAT_INF FLOAT_INF_EQUAL FLOAT_SUP FLOAT_SUP_EQUAL
 
-%left PREC_UMINUS
-%nonassoc _LOWER_LVALUE
-%nonassoc _LVALUE '['
-%left PREC_FCT_CALL '('
+%left _FCT_CALL
+%right _DEREF_PTR
+%left _DEREF_ARR '['
+%nonassoc _LVALUE
+%right _IF_NO_ELSE
+/* %right ELSE */
 
 %type <strval> name
 
@@ -192,9 +194,6 @@ scope:
 	███████║   ██║   ██║  ██║   ██║   ███████╗██║ ╚═╝ ██║███████╗██║ ╚████║   ██║   
 	╚══════╝   ╚═╝   ╚═╝  ╚═╝   ╚═╝   ╚══════╝╚═╝     ╚═╝╚══════╝╚═╝  ╚═══╝   ╚═╝   */
 
-/* simple_statement:	// Maybe ass simple statement si if are simpler to implement
-	; */
-
 statement:
 	 	auto ';' statement
 	| 	extern ';' statement
@@ -214,16 +213,16 @@ statement:
 	;
 
 if_statement:
-		IF '(' rvalue ')' statement
+		IF '(' rvalue ')' statement						%prec _IF_NO_ELSE
 	|	IF '(' rvalue ')' statement ELSE statement
 	;
 
 switch_statement:
-	SWITCH '(' rvalue  ')' '{'statement_0_ '}'
+		SWITCH '(' rvalue  ')' '{'statement_0_ '}'
 	;
 
 label:
-    		 name ':' 
+		name ':' 
 			{DEBUG("Label declaration")}
 	;
 
@@ -246,23 +245,25 @@ drop:
 	╚═╝  ╚═╝        ╚═══╝  ╚═╝  ╚═╝╚══════╝ ╚═════╝ ╚══════╝*/
 
 rvalue:
-		rvalue12
+		rvalue13
 	;
 
 lvalue:
 	 	name
-	|	MULT rvalue1 %prec _LOWER_LVALUE
-	|   rvalue0 '[' rvalue ']' %prec _LVALUE
+	|	MULT rvalue2
+	|   rvalue0 '[' rvalue ']'
 	;
 
 rvalue0:
-		lvalue
+	 	name
+	|	MULT rvalue2
+	|   rvalue0 '[' rvalue ']'
 			{}
 	|	constant
 			{}
 	|	lambda_declaration
 			{}
-	|	function_call
+	|	function_call	%prec _FCT_CALL
 			{DEBUG("Function Call");}
 	|	'(' rvalue_1_ ')'
 			{}
@@ -271,129 +272,131 @@ rvalue0:
 	;
 
 rvalue1:
-		pre-inc_dec
+		pre-inc_dec	
 			{}
 	|	post-inc_dec
 			{}
-	|	AND lvalue	
-			{}
-	|	SUB rvalue1	%prec PREC_UMINUS
-		 	{}
-	|	NOT rvalue1
-			{}
-	|	TILDE rvalue1
-			{}
-	|	FLOAT_SUB rvalue1
-			{}
-	|	INT_TO_FLOAT rvalue1
-			{}
-	|	FLOAT_TO_INT rvalue1
-			{}
-	|	rvalue0	 %prec _LOWER_LVALUE
-	;
 
 rvalue2:
-		rvalue2 R_SHIFT rvalue1
+		AND lvalue	
 			{}
-	|	rvalue2 L_SHIFT rvalue1
+	|	SUB rvalue2
+		 	{}
+	|	NOT rvalue2
 			{}
-	|	rvalue1
+	|	TILDE rvalue2
+			{}
+	|	FLOAT_SUB rvalue2
+			{}
+	|	INT_TO_FLOAT rvalue2
+			{}
+	|	FLOAT_TO_INT rvalue2
+			{}
+	|	rvalue1	
 	;
 
 rvalue3:
-		rvalue3 AND rvalue2
+		rvalue3 R_SHIFT rvalue2
+			{}
+	|	rvalue3 L_SHIFT rvalue2
 			{}
 	|	rvalue2
 	;
 
 rvalue4:
-		rvalue4 XOR rvalue3
+		rvalue4 AND rvalue3
 			{}
 	|	rvalue3
 	;
 
 rvalue5:
-		rvalue5 OR rvalue4
+		rvalue5 XOR rvalue4
 			{}
 	|	rvalue4
 	;
 
 rvalue6:
-		rvalue6 MULT rvalue5
-			{}
-	|	rvalue6 DIV rvalue5
-			{}
-	|	rvalue6 MODULO rvalue5
-			{}
-	|	rvalue6 FLOAT_MULT rvalue5
-			{}
-	|	rvalue6 FLOAT_DIV rvalue5
+		rvalue6 OR rvalue5
 			{}
 	|	rvalue5
 	;
 
 rvalue7:
-		rvalue7 ADD rvalue6
+		rvalue7 MULT rvalue6
 			{}
-	|	rvalue7 SUB rvalue6
+	|	rvalue7 DIV rvalue6
 			{}
-	|	rvalue7 FLOAT_SUB rvalue6
+	|	rvalue7 MODULO rvalue6
 			{}
-	|	rvalue7 FLOAT_ADD rvalue6
+	|	rvalue7 FLOAT_MULT rvalue6
+			{}
+	|	rvalue7 FLOAT_DIV rvalue6
 			{}
 	|	rvalue6
 	;
 
 rvalue8:
-		rvalue8 EQUAL rvalue7
+		rvalue8 ADD rvalue7
 			{}
-	|	rvalue8 NOT_EQUAL rvalue7
+	|	rvalue8 SUB rvalue7
 			{}
-	|	rvalue8 SUP rvalue7
+	|	rvalue8 FLOAT_SUB rvalue7
 			{}
-	|	rvalue8 INF rvalue7
-			{}
-	|	rvalue8 SUP_EQUAL rvalue7
-			{}
-	|	rvalue8 INF_EQUAL rvalue7
-			{}
-	|	rvalue8 FLOAT_EQUAL rvalue7
-			{}
-	|	rvalue8 FLOAT_NOT_EQUAL rvalue7
-			{}
-	|	rvalue8 FLOAT_SUP rvalue7
-			{}
-	|	rvalue8 FLOAT_INF rvalue7
-			{}
-	|	rvalue8 FLOAT_SUP_EQUAL rvalue7
-			{}
-	|	rvalue8 FLOAT_INF_EQUAL rvalue7
+	|	rvalue8 FLOAT_ADD rvalue7
 			{}
 	|	rvalue7
 	;
 
 rvalue9:
-		rvalue9 LOGICAL_AND rvalue8
+		rvalue9 EQUAL rvalue8
+			{}
+	|	rvalue9 NOT_EQUAL rvalue8
+			{}
+	|	rvalue9 SUP rvalue8
+			{}
+	|	rvalue9 INF rvalue8
+			{}
+	|	rvalue9 SUP_EQUAL rvalue8
+			{}
+	|	rvalue9 INF_EQUAL rvalue8
+			{}
+	|	rvalue9 FLOAT_EQUAL rvalue8
+			{}
+	|	rvalue9 FLOAT_NOT_EQUAL rvalue8
+			{}
+	|	rvalue9 FLOAT_SUP rvalue8
+			{}
+	|	rvalue9 FLOAT_INF rvalue8
+			{}
+	|	rvalue9 FLOAT_SUP_EQUAL rvalue8
+			{}
+	|	rvalue9 FLOAT_INF_EQUAL rvalue8
 			{}
 	|	rvalue8
 	;
 
 rvalue10:
-		rvalue10 LOGICAL_OR rvalue9
+		rvalue10 LOGICAL_AND rvalue9
 			{}
 	|	rvalue9
 	;
 
 rvalue11:
-		rvalue10 '?' rvalue11 ':' rvalue11
+		rvalue11 LOGICAL_OR rvalue10
 			{}
 	|	rvalue10
 	;
 
 rvalue12:
-		assignment
+		rvalue11 '?' rvalue12 ':' rvalue12
 			{}
 	|	rvalue11
+	;
+
+rvalue13:
+		assignment
+			{}
+	|	rvalue12
 	;
 
 pre-inc_dec:
@@ -416,7 +419,7 @@ post-inc_dec:
 	; */
 
 function_call:
-		rvalue0 '(' rvalue_0_ ')' 	%prec PREC_FCT_CALL
+		rvalue0 '(' rvalue_0_ ')' 	%prec _FCT_CALL
 	;
 
 
@@ -428,7 +431,7 @@ function_call:
 	╚═╝  ╚═╝╚══════╝╚══════╝╚═╝ ╚═════╝ ╚═╝  ╚═══╝╚══════╝╚═╝     ╚═╝╚══════╝╚═╝  ╚═══╝   ╚═╝   */
 
 assignment:
-	   lvalue assign_opp rvalue12;
+	   lvalue assign_opp rvalue13;
 
 
 assign_opp:

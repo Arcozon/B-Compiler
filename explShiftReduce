@@ -1,4 +1,4 @@
-irst example: GOTO '(' NAME • ',' name_1_ ')' $@1 scope '[' rvalue ']' assign_opp rvalue12 ';' statement program $end
+First example: GOTO '(' NAME • ',' name_1_ ')' $@1 scope '[' rvalue ']' assign_opp rvalue12 ';' statement program $end
   Shift derivation
     $accept
     ↳ 0: program                                                                                                                                                                    $end
