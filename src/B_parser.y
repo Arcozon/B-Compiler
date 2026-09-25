@@ -36,17 +36,30 @@
 
 %token LOGICAL_AND LOGICAL_OR
 
-%token L_SHIFT R_SHIFT MULT DIV MODULO ADD SUB OR AND EQUAL XOR NOT_EQUAL INF INF_EQUAL SUP SUP_EQUAL
+%token L_SHIFT R_SHIFT MULT DIV MODULO ADD SUB OR AND  XOR EQUAL NOT_EQUAL INF INF_EQUAL SUP SUP_EQUAL
 %token ASSIGN ASSIGN_L_SHIFT ASSIGN_R_SHIFT ASSIGN_MULT ASSIGN_DIV ASSIGN_MODULO ASSIGN_ADD ASSIGN_SUB ASSIGN_OR ASSIGN_AND ASSIGN_XOR ASSIGN_EQUAL ASSIGN_NOT_EQUAL ASSIGN_INF ASSIGN_INF_EQUAL ASSIGN_SUP ASSIGN_SUP_EQUAL
 
 %token FLOAT_INC FLOAT_DEC 
 %token FLOAT_MULT FLOAT_DIV FLOAT_ADD FLOAT_SUB FLOAT_EQUAL FLOAT_NOT_EQUAL FLOAT_INF FLOAT_INF_EQUAL FLOAT_SUP FLOAT_SUP_EQUAL 
-%token FLOAT_ASSIGN_MULT FLOAT_ASSIGN_DIV FLOAT_ASSIGN_ADD FLOAT_ASSIGN_SUB FLOAT_ASSIGN_EQUAL FLOAT_ASSIGN_NOT_EQUAL FLOAT_ASSIGN_INF FLOAT_ASSIGN_INF_EQUAL FLOAT_ASSIGN_SUP FLOAT_ASSIGN_SUP_EQUAL %token NOT TILDE
+%token FLOAT_ASSIGN_MULT FLOAT_ASSIGN_DIV FLOAT_ASSIGN_ADD FLOAT_ASSIGN_SUB FLOAT_ASSIGN_EQUAL FLOAT_ASSIGN_NOT_EQUAL FLOAT_ASSIGN_INF FLOAT_ASSIGN_INF_EQUAL FLOAT_ASSIGN_SUP FLOAT_ASSIGN_SUP_EQUAL
+%token NOT TILDE
 
 %token MULTI_LINE_CMT_END
 /* %token UNKNOWN */
 
-%left INC SUB FLOAT_INC FLOAT_SUB
+
+%right ASSIGN ASSIGN_L_SHIFT ASSIGN_R_SHIFT ASSIGN_MULT ASSIGN_DIV ASSIGN_MODULO ASSIGN_ADD ASSIGN_SUB ASSIGN_OR ASSIGN_AND ASSIGN_XOR ASSIGN_EQUAL ASSIGN_NOT_EQUAL ASSIGN_INF ASSIGN_INF_EQUAL ASSIGN_SUP ASSIGN_SUP_EQUAL
+%right FLOAT_ASSIGN_MULT FLOAT_ASSIGN_DIV FLOAT_ASSIGN_ADD FLOAT_ASSIGN_SUB FLOAT_ASSIGN_EQUAL FLOAT_ASSIGN_NOT_EQUAL FLOAT_ASSIGN_INF FLOAT_ASSIGN_INF_EQUAL FLOAT_ASSIGN_SUP FLOAT_ASSIGN_SUP_EQUAL
+
+%left INC SUB FLOAT_INC FLOAT_SUB 
+
+// comparaison cannot be chained
+%nonassoc EQUAL NOT_EQUAL INF INF_EQUAL SUP SUP_EQUAL FLOAT_EQUAL FLOAT_NOT_EQUAL FLOAT_INF FLOAT_INF_EQUAL FLOAT_SUP FLOAT_SUP_EQUAL
+
+%left PREC_UMINUS
+%nonassoc _LOWER_LVALUE
+%nonassoc _LVALUE '['
+%left PREC_FCT_CALL '('
 
 %type <strval> name
 
@@ -236,6 +249,12 @@ rvalue:
 		rvalue12
 	;
 
+lvalue:
+	 	name
+	|	MULT rvalue1 %prec _LOWER_LVALUE
+	|   rvalue0 '[' rvalue ']' %prec _LVALUE
+	;
+
 rvalue0:
 		lvalue
 			{}
@@ -256,9 +275,9 @@ rvalue1:
 			{}
 	|	post-inc_dec
 			{}
-	|	AND lvalue
+	|	AND lvalue	
 			{}
-	|	SUB rvalue1
+	|	SUB rvalue1	%prec PREC_UMINUS
 		 	{}
 	|	NOT rvalue1
 			{}
@@ -270,7 +289,7 @@ rvalue1:
 			{}
 	|	FLOAT_TO_INT rvalue1
 			{}
-	|	rvalue0
+	|	rvalue0	 %prec _LOWER_LVALUE
 	;
 
 rvalue2:
@@ -391,27 +410,13 @@ post-inc_dec:
 	|	lvalue FLOAT_DEC
 	;
 
-lvalue:
-		lvalue1
-	;
-
-lvalue0:
-		name
-	|	deref_array	
-	;
-
-lvalue1:
-		MULT rvalue1
-	|	lvalue0	
-	;
-
-deref_array:
-		rvalue0 '[' rvalue ']'
+/* deref_array:
+		rvalue0 '[' rvalue ']' 	%prec PREC_DEREF_ARRAY
 			{}
-	;
+	; */
 
 function_call:
-		rvalue0 '(' rvalue_0_ ')'
+		rvalue0 '(' rvalue_0_ ')' 	%prec PREC_FCT_CALL
 	;
 
 
@@ -424,6 +429,7 @@ function_call:
 
 assignment:
 	   lvalue assign_opp rvalue12;
+
 
 assign_opp:
 		ASSIGN
@@ -491,6 +497,6 @@ void	yyerror (char const s[]) {
 data_t	parsData =  {0};
 
 int main(void) {
-	printf(".intel_syntax noprefix\n");
+	/* printf(".intel_syntax noprefix\n"); */
 	yyparse();
 }

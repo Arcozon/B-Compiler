@@ -1,19 +1,46 @@
-src/B_parser.y: warning: shift/reduce conflict on token '(' [-Wcounterexamples]
-  Example: MULT rvalue0 • '(' ')'
+irst example: GOTO '(' NAME • ',' name_1_ ')' $@1 scope '[' rvalue ']' assign_opp rvalue12 ';' statement program $end
   Shift derivation
-    rvalue0
-    ↳ 66: lvalue
-          ↳ 131: lvalue1
-                 ↳ 134: MULT rvalue1
-                             ↳ 81: rvalue0
-                                   ↳ 69: function_call
-                                         ↳ 137: rvalue0 • '(' rvalue_0_ ')'
-                                                              ↳ 137: ε
+    $accept
+    ↳ 0: program                                                                                                                                                                    $end
+         ↳ 24: definition                                                                                                                                                   program
+               ↳ 26: function
+                     ↳ 35: statement                                                                                                                              statement
+                           ↳ 52: GOTO rvalue                                                                                                                  ';'
+                                      ↳ 65: rvalue12
+                                            ↳ 124: assignment
+                                                   ↳ 135: lvalue                                                                          assign_opp rvalue12
+                                                          ↳ 68: rvalue0                                                    '[' rvalue ']'
+                                                                ↳ 71: lambda_declaration
+                                                                      ↳ 38: '(' name_0_                      ')' $@1 scope
+                                                                                ↳ 3: name_1_
+                                                                                     ↳ 5: NAME • ',' name_1_
+  Second example: function_definition GOTO '(' NAME • ',' rvalue_1_ ')' '[' rvalue ']' assign_opp rvalue12 ';' program $end
   Reduce derivation
-    rvalue0
-    ↳ 69: function_call
-          ↳ 137: rvalue0                                  '(' rvalue_0_ ')'
-                 ↳ 66: lvalue                                 ↳ 137: ε
-                       ↳ 131: lvalue1
-                              ↳ 134: MULT rvalue1
-                                          ↳ 81: rvalue0 •
+    $accept
+    ↳ 0: program                                                                                                                                                                                                                                                                 $end
+         ↳ 24: definition                                                                                                                                                                                                                                                program
+               ↳ 26: function
+                     ↳ 35: function_definition statement
+                                               ↳ 52: GOTO rvalue                                                                                                                                                                                                     ';'
+                                                          ↳ 65: rvalue12
+                                                                ↳ 124: assignment
+                                                                       ↳ 135: lvalue                                                                                                                                                             assign_opp rvalue12
+                                                                              ↳ 68: rvalue0                                                                                                                                       '[' rvalue ']'
+                                                                                    ↳ 73: '(' rvalue_1_                                                                                                                       ')'
+                                                                                              ↳ 22: rvalue                                                                                                      ',' rvalue_1_
+                                                                                                    ↳ 65: rvalue12
+                                                                                                          ↳ 125: rvalue11
+                                                                                                                 ↳ 123: rvalue10
+                                                                                                                        ↳ 121: rvalue9
+                                                                                                                               ↳ 119: rvalue8
+                                                                                                                                      ↳ 117: rvalue7
+                                                                                                                                             ↳ 104: rvalue6
+                                                                                                                                                    ↳ 99: rvalue5
+                                                                                                                                                          ↳ 93: rvalue4
+                                                                                                                                                                ↳ 91: rvalue3
+                                                                                                                                                                      ↳ 89: rvalue2
+                                                                                                                                                                            ↳ 87: rvalue1
+                                                                                                                                                                                  ↳ 84: rvalue0
+                                                                                                                                                                                        ↳ 69: lvalue
+                                                                                                                                                                                              ↳ 66: name
+                                                                                                                                                                                                    ↳ 1: NAME •
